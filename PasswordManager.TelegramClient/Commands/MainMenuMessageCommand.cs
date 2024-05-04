@@ -6,7 +6,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.TelegramClient.Commands;
 
-public class MainMenuMessageCommand(IUserDataRepository userDataRepository, ITelegramCommandResolver commandResolver): MessageCommand(userDataRepository, commandResolver)
+public class MainMenuMessageCommand(IUserDataRepository userDataRepository): MessageCommand(userDataRepository)
 {
     public override Task<bool> IsMatchAsync(Message message, CancellationToken cancellationToken = default)
     {

@@ -7,8 +7,10 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.TelegramClient.Commands;
 
-public abstract class MessageCommand(IUserDataRepository userDataRepository, ITelegramCommandResolver commandResolver): ITelegramCommand
+public abstract class MessageCommand(IUserDataRepository userDataRepository): ITelegramCommand
 {
+    protected bool MasterPasswordNeeded { get; set; } = true;
+    
     public abstract Task<bool> IsMatchAsync(Message message, CancellationToken cancellationToken = default);
 
     public async Task<ExecuteTelegramCommandResult> ExecuteAsync(Message message, ITelegramBotClient client, CancellationToken cancellationToken = default)
@@ -16,22 +18,14 @@ public abstract class MessageCommand(IUserDataRepository userDataRepository, ITe
         var userData = await userDataRepository.GetUserDataAsync(message.Chat.Id, cancellationToken);
         CultureInfo.CurrentCulture = userData.Locale.ToCulture();
         
-        if (string.IsNullOrEmpty(userData.MasterPasswordHash))
+        if (MasterPasswordNeeded && string.IsNullOrEmpty(userData.MasterPasswordHash))
         {
-            ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
-            {
-                new KeyboardButton[] { MessageBodies.SetUpMasterPasswordMessageBody },
-            })
-            {
-                ResizeKeyboard = true
-            };
-            
-            await client.SendTextMessageAsync(message.Chat.Id, MessageBodies.WrongMessageWarningBody, 
-                replyMarkup: replyKeyboardMarkup, cancellationToken: cancellationToken);
+            await client.SendTextMessageAsync(message.Chat.Id, MessageBodies.SetUpMasterPasswordMessageBody, 
+                replyMarkup: new ReplyKeyboardRemove(), cancellationToken: cancellationToken);
 
             return new ExecuteTelegramCommandResult()
             {
-                NextListener = await commandResolver.ResolveCommandAsync<SetMasterPasswordMessageCommand>(cancellationToken)
+                NextListener = typeof(SetMasterPasswordMessageCommand)
             };
         }
 

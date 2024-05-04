@@ -4,8 +4,18 @@ using Telegram.Bot.Types;
 
 namespace PasswordManager.TelegramClient.Commands;
 
-public class SetMasterPasswordMessageCommand(IUserDataRepository userDataRepository, ITelegramCommandResolver commandResolver): MessageCommand(userDataRepository, commandResolver)
+public class SetMasterPasswordMessageCommand : MessageCommand
 {
+    private readonly IUserDataRepository _userDataRepository;
+    private readonly ITelegramCommandResolver _commandResolver;
+
+    public SetMasterPasswordMessageCommand(IUserDataRepository userDataRepository, ITelegramCommandResolver commandResolver) : base(userDataRepository)
+    {
+        _userDataRepository = userDataRepository;
+        _commandResolver = commandResolver;
+        MasterPasswordNeeded = false;
+    }
+
     public override Task<bool> IsMatchAsync(Message message, CancellationToken cancellationToken = default)
     {
         return Task.FromResult(false);
@@ -20,15 +30,15 @@ public class SetMasterPasswordMessageCommand(IUserDataRepository userDataReposit
             await request.Client.SendTextMessageAsync(request.Message.Chat.Id, Resources.MessageBodies.YouNeedAtLeastOneCharForPassword, cancellationToken: cancellationToken);
             return new ExecuteTelegramCommandResult()
             {
-                NextListener = this
+                NextListener = GetType()
             };
         }
         
-        await userDataRepository.ChangeMasterPasswordAsync(request.Message.Chat.Id, password, cancellationToken);
+        await _userDataRepository.ChangeMasterPasswordAsync(request.Message.Chat.Id, password, cancellationToken);
         
         await request.Client.SendTextMessageAsync(request.Message.Chat.Id, Resources.MessageBodies.YourMasterPasswordIsApplied, cancellationToken: cancellationToken);
 
-        var mainMenu = await commandResolver.ResolveCommandAsync<MainMenuMessageCommand>(cancellationToken);
+        var mainMenu = await _commandResolver.ResolveCommandAsync<MainMenuMessageCommand>(cancellationToken);
         await mainMenu.ExecuteAsync(request.Message, request.Client, cancellationToken);
 
         return new ExecuteTelegramCommandResult();

@@ -50,7 +50,7 @@ public class UserDataRepository(TelegramClientContext context, IMemoryCache cach
     public async Task ChangeMasterPasswordAsync(long telegramUserId, string masterPassword,
         CancellationToken cancellationToken = default)
     {
-        var userData = await context.TelegramUserData.AsNoTracking()
+        var userData = await context.TelegramUserData
             .FirstAsync(x => x.TelegramUserId == telegramUserId, cancellationToken);
         
         userData.MasterPasswordHash = Cryptographer.GetHash(masterPassword);

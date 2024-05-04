@@ -7,43 +7,39 @@ using Telegram.Bot.Types;
 
 namespace PasswordManager.TelegramClient.Commands;
 
-public class TelegramMessageCommandHandler: IUpdateHandler, ITelegramCommandResolver
+public class TelegramMessageCommandHandler(IServiceProvider serviceProvider, IMemoryCache memoryCache): IUpdateHandler, ITelegramCommandResolver
 {
-    private readonly IMemoryCache _memoryCache;
-    
-    private readonly Dictionary<Type, ITelegramCommand> _commands = new();
+    private Dictionary<Type, ITelegramCommand>? _commands = null;
 
-    private readonly ITelegramCommand _wrongMessageCommand;
-
-    public TelegramMessageCommandHandler(IServiceProvider serviceProvider, IMemoryCache memoryCache)
+    private Dictionary<Type, ITelegramCommand> Commands
     {
-        _memoryCache = memoryCache;
-        var commandTypes = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(t => typeof(ITelegramCommand).IsAssignableFrom(t) && t is { IsInterface: false, IsAbstract: false });
-
-        _commands = commandTypes.Select(x => 
-                (ITelegramCommand)ActivatorUtilities.CreateInstance(serviceProvider, x))
-            .ToDictionary(x => x.GetType(), x => x);
-
-        _wrongMessageCommand = ResolveCommandAsync<MainMenuMessageCommand>().Result;
+        get
+        {
+            if (_commands is null) RegisterCommands();
+            return _commands!;
+        }
     }
+    
+    private ITelegramCommand _wrongMessageCommand;
     
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         if (update.Message is null) return;
 
-        var cachedListener = _memoryCache.Get<Type>(GetListenerCacheKey(update.Message.Chat.Id));
+        var cachedListener = memoryCache.Get<Type>(GetListenerCacheKey(update.Message.Chat.Id));
+        if (cachedListener is not null)
+            memoryCache.Remove(GetListenerCacheKey(update.Message.Chat.Id));
         
         var command = (cachedListener is null 
-                          ? _commands.Values.FirstOrDefault(x => x.IsMatchAsync(update.Message, cancellationToken).Result)
-                          : _commands.GetValueOrDefault(cachedListener)) 
+                          ? Commands.Values.FirstOrDefault(x => x.IsMatchAsync(update.Message, cancellationToken).Result)
+                          : Commands.GetValueOrDefault(cachedListener)) 
                       ?? _wrongMessageCommand;
         
         var result = await command.ExecuteAsync(update.Message, botClient, cancellationToken);
 
         if (result.NextListener is not null)
         {
-            _memoryCache.Set(GetListenerCacheKey(update.Message.Chat.Id), result.NextListener, TimeSpan.FromMinutes(10));
+            memoryCache.Set(GetListenerCacheKey(update.Message.Chat.Id), result.NextListener, TimeSpan.FromMinutes(10));
         }
     }
 
@@ -55,7 +51,19 @@ public class TelegramMessageCommandHandler: IUpdateHandler, ITelegramCommandReso
     public Task<ITelegramCommand> ResolveCommandAsync<T>(CancellationToken cancellationToken = default)
         where T: ITelegramCommand
     {
-        return Task.FromResult(_commands[typeof(T)]);
+        return Task.FromResult(Commands[typeof(T)]);
+    }
+    
+    private void RegisterCommands()
+    {
+        var commandTypes = Assembly.GetExecutingAssembly().GetTypes()
+            .Where(t => typeof(ITelegramCommand).IsAssignableFrom(t) && t is { IsInterface: false, IsAbstract: false });
+
+        _commands = commandTypes.Select(x => 
+                (ITelegramCommand)ActivatorUtilities.CreateInstance(serviceProvider, x))
+            .ToDictionary(x => x.GetType(), x => x);
+
+        _wrongMessageCommand = ResolveCommandAsync<MainMenuMessageCommand>().Result;
     }
     
     private static string GetListenerCacheKey(long chatId) => $"Listener_{chatId}";
