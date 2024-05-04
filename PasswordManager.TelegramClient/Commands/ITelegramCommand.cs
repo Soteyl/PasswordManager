@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using PasswordManager.TelegramClient.Commands.Contracts;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace PasswordManager.TelegramClient.Commands;

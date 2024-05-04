@@ -8,7 +8,7 @@ public class TelegramUserDataEntity
     
     public long TelegramUserId { get; set; }
     
-    public string MasterPasswordHash { get; set; } 
+    public string? MasterPasswordHash { get; set; } 
     
     public Locale Locale { get; set; }
 }

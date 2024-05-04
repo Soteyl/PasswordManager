@@ -5,7 +5,7 @@ using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
-namespace PasswordManager.TelegramClient.Commands;
+namespace PasswordManager.TelegramClient.Commands.Handler;
 
 public class TelegramMessageCommandHandler(IServiceProvider serviceProvider, IMemoryCache memoryCache): IUpdateHandler, ITelegramCommandResolver
 {

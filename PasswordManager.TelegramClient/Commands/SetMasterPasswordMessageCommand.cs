@@ -1,4 +1,6 @@
-﻿using PasswordManager.TelegramClient.Data.Repository;
+﻿using PasswordManager.TelegramClient.Commands.Contracts;
+using PasswordManager.TelegramClient.Commands.Handler;
+using PasswordManager.TelegramClient.Data.Repository;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -9,18 +11,14 @@ public class SetMasterPasswordMessageCommand : MessageCommand
     private readonly IUserDataRepository _userDataRepository;
     private readonly ITelegramCommandResolver _commandResolver;
 
-    public SetMasterPasswordMessageCommand(IUserDataRepository userDataRepository, ITelegramCommandResolver commandResolver) : base(userDataRepository)
+    public SetMasterPasswordMessageCommand(IUserDataRepository userDataRepository, ITelegramCommandResolver commandResolver) 
+        : base(userDataRepository)
     {
         _userDataRepository = userDataRepository;
         _commandResolver = commandResolver;
         MasterPasswordNeeded = false;
     }
-
-    public override Task<bool> IsMatchAsync(Message message, CancellationToken cancellationToken = default)
-    {
-        return Task.FromResult(false);
-    }
-
+    
     protected override async Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request, CancellationToken cancellationToken = default)
     {
         var password = request.Message!.Text;

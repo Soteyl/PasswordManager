@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PasswordManager.TelegramClient.Data;
@@ -11,9 +12,11 @@ using PasswordManager.TelegramClient.Data;
 namespace PasswordManager.TelegramClient.Migrations
 {
     [DbContext(typeof(TelegramClientContext))]
-    partial class TelegramClientContextModelSnapshot : ModelSnapshot
+    [Migration("20240504132702_Initial3")]
+    partial class Initial3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

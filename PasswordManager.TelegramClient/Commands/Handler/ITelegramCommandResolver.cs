@@ -1,4 +1,4 @@
-﻿namespace PasswordManager.TelegramClient.Commands;
+﻿namespace PasswordManager.TelegramClient.Commands.Handler;
 
 public interface ITelegramCommandResolver
 {

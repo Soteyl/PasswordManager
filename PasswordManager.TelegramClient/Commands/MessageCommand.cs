@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using PasswordManager.TelegramClient.Commands.Contracts;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Resources;
 using Telegram.Bot;
@@ -11,7 +12,12 @@ public abstract class MessageCommand(IUserDataRepository userDataRepository): IT
 {
     protected bool MasterPasswordNeeded { get; set; } = true;
     
-    public abstract Task<bool> IsMatchAsync(Message message, CancellationToken cancellationToken = default);
+    protected virtual List<string> Commands { get; } = new ();
+
+    public virtual Task<bool> IsMatchAsync(Message message, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(Commands.Contains(message.Text!));
+    }
 
     public async Task<ExecuteTelegramCommandResult> ExecuteAsync(Message message, ITelegramBotClient client, CancellationToken cancellationToken = default)
     {
@@ -29,6 +35,14 @@ public abstract class MessageCommand(IUserDataRepository userDataRepository): IT
             };
         }
 
+        if (message.Text == MessageButtons.Cancel)
+        {
+            return new ExecuteTelegramCommandResult()
+            {
+                NextListener = typeof(MainMenuMessageCommand)
+            };
+        }
+
         return await ExecuteCommandAsync(new ExecuteTelegramCommandRequest()
         {
             Message = message,
@@ -39,4 +53,12 @@ public abstract class MessageCommand(IUserDataRepository userDataRepository): IT
 
     protected abstract Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request,
         CancellationToken cancellationToken = default);
+
+    protected static ReplyKeyboardMarkup GetMarkup(params string[] buttons)
+    {
+        return new(buttons.Select(x => new KeyboardButton(x)))
+        {
+            ResizeKeyboard = true
+        };
+    }
 }

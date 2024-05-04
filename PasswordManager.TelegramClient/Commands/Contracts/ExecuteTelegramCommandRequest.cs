@@ -2,7 +2,7 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace PasswordManager.TelegramClient.Commands;
+namespace PasswordManager.TelegramClient.Commands.Contracts;
 
 public class ExecuteTelegramCommandRequest
 {

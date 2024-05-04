@@ -30,4 +30,20 @@
     <data name="YourMasterPasswordIsApplied" xml:space="preserve">
         <value>Your master password is successfully applied!</value>
     </data>
+    <data name="YouHaveNoAccounts" xml:space="preserve">
+        <value>Your accounts list is empty.</value>
+    </data>
+    <data name="AccountsList" xml:space="preserve">
+        <value>Here is your accounts:
+{0}</value>
+    </data>
+    <data name="InternalError" xml:space="preserve">
+        <value>Internal error. Please contact a developer.</value>
+    </data>
+    <data name="SendUrlToAddAccount" xml:space="preserve">
+        <value>Send URL of your website:</value>
+    </data>
+    <data name="SendWebsiteNicknameToAddAccount" xml:space="preserve">
+        <value>Send a nickname for yout website:</value>
+    </data>
 </root>

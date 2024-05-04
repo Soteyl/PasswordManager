@@ -60,6 +60,43 @@ namespace PasswordManager.TelegramClient.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Here is your accounts:
+        ///{0}.
+        /// </summary>
+        internal static string AccountsList {
+            get {
+                return ResourceManager.GetString("AccountsList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal error. Please contact a developer..
+        /// </summary>
+        internal static string InternalError {
+            get {
+                return ResourceManager.GetString("InternalError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send URL of your website:.
+        /// </summary>
+        internal static string SendUrlToAddAccount {
+            get {
+                return ResourceManager.GetString("SendUrlToAddAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send a nickname for yout website:.
+        /// </summary>
+        internal static string SendWebsiteNicknameToAddAccount {
+            get {
+                return ResourceManager.GetString("SendWebsiteNicknameToAddAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Set up a master password:.
         /// </summary>
         internal static string SetUpMasterPasswordMessageBody {
@@ -74,6 +111,15 @@ namespace PasswordManager.TelegramClient.Resources {
         internal static string WrongMessageWarningBody {
             get {
                 return ResourceManager.GetString("WrongMessageWarningBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your accounts list is empty..
+        /// </summary>
+        internal static string YouHaveNoAccounts {
+            get {
+                return ResourceManager.GetString("YouHaveNoAccounts", resourceCulture);
             }
         }
         
