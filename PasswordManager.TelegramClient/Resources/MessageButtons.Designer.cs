@@ -105,6 +105,15 @@ namespace PasswordManager.TelegramClient.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Return to menu.
+        /// </summary>
+        internal static string Return {
+            get {
+                return ResourceManager.GetString("Return", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show my accounts.
         /// </summary>
         internal static string ShowMyAccounts {

@@ -67,4 +67,7 @@ Provide a master password to encrypt your data:</value>
     <data name="WrongMasterPassword" xml:space="preserve">
         <value>Wrong master password. Please try again or cancel an action.</value>
     </data>
+    <data name="AddAccountSuccess" xml:space="preserve">
+        <value>You have been sucessfull added an account!</value>
+    </data>
 </root>

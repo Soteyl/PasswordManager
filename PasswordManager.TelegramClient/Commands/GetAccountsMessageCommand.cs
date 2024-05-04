@@ -2,6 +2,7 @@
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Resources;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.TelegramClient.Commands;
@@ -26,7 +27,8 @@ public class GetAccountsMessageCommand(IUserDataRepository userDataRepository,
             : MessageBodies.InternalError;
         
         await request.Client.SendTextMessageAsync(request.Message.Chat.Id, message, 
-            replyMarkup: GetMarkup(MessageButtons.AddAccount, MessageButtons.Cancel), cancellationToken: cancellationToken);
+            replyMarkup: GetMarkup(MessageButtons.AddAccount, MessageButtons.Cancel), disableWebPagePreview: true,
+            parseMode: ParseMode.MarkdownV2, cancellationToken: cancellationToken);
         return new ExecuteTelegramCommandResult();
     }
 }

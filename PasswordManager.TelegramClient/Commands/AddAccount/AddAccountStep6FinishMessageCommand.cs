@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using Microsoft.Extensions.Caching.Memory;
 using PasswordManager.TelegramClient.Commands.Contracts;
+using PasswordManager.TelegramClient.Commands.Handler;
 using PasswordManager.TelegramClient.Cryptography;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Resources;
@@ -13,7 +14,7 @@ public class AddAccountStep6FinishMessageCommand(IUserDataRepository userDataRep
 {
     protected override async Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request, CancellationToken cancellationToken = default)
     {
-        var account = memoryCache.Get<AddAccountRequest>(AddAccountConstraints.GetAddAccountContractCacheKey(request.UserData.TelegramUserId));
+        var account = memoryCache.Get<AddAccountRequest>(CacheConstraints.GetAddAccountContractCacheKey(request.UserData.TelegramUserId));
         if (account == null) return new ExecuteTelegramCommandResult();
 
         var masterPassword = request.Message.Text!;
@@ -40,14 +41,11 @@ public class AddAccountStep6FinishMessageCommand(IUserDataRepository userDataRep
             WebsiteNickname = account.WebsiteNickname
         }, cancellationToken: cancellationToken);
         
-        if (!response.Response.IsSuccess)
-        {
-            await request.Client.SendTextMessageAsync(request.Message.Chat.Id,
-                MessageBodies.InternalError, replyMarkup: GetMarkup(MessageButtons.Cancel),
-                cancellationToken: cancellationToken);
-        }
+        await request.Client.SendTextMessageAsync(request.Message.Chat.Id,
+            (response.Response.IsSuccess) ? MessageBodies.AddAccountSuccess : MessageBodies.InternalError, 
+            replyMarkup: GetMarkup(MessageButtons.Return), cancellationToken: cancellationToken);
         
-        memoryCache.Remove(AddAccountConstraints.GetAddAccountContractCacheKey(request.UserData.TelegramUserId));
+        memoryCache.Remove(CacheConstraints.GetAddAccountContractCacheKey(request.UserData.TelegramUserId));
 
         return new ExecuteTelegramCommandResult();
     }

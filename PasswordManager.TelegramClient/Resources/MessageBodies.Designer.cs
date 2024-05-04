@@ -85,6 +85,15 @@ namespace PasswordManager.TelegramClient.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You have been sucessfull added an account!.
+        /// </summary>
+        internal static string AddAccountSuccess {
+            get {
+                return ResourceManager.GetString("AddAccountSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal error. Please contact a developer..
         /// </summary>
         internal static string InternalError {

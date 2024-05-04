@@ -9,7 +9,7 @@ public static class MessageBodiesParametrized
         StringBuilder stringBuilder = new();
         for (int i = 0; i < accounts.Count; i++)
         {
-            stringBuilder.AppendLine($"{i + 1}. {accounts[i].WebsiteNickname} *({accounts[i].Url})* - {accounts[i].User}");
+            stringBuilder.AppendLine($"{i + 1}\\. *{accounts[i].WebsiteNickname}* _\\({accounts[i].Url.Replace(".", "\\.")}\\)_ \\- {accounts[i].User}");
         }
         return string.Format(MessageBodies.AccountsList, stringBuilder);
     } 

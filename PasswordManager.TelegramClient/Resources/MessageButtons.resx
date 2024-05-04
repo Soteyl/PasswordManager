@@ -36,4 +36,7 @@
     <data name="Cancel" xml:space="preserve">
         <value>Cancel</value>
     </data>
+    <data name="Return" xml:space="preserve">
+        <value>Return to menu</value>
+    </data>
 </root>

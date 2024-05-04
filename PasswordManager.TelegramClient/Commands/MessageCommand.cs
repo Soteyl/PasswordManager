@@ -35,14 +35,6 @@ public abstract class MessageCommand(IUserDataRepository userDataRepository): IT
             };
         }
 
-        if (message.Text == MessageButtons.Cancel)
-        {
-            return new ExecuteTelegramCommandResult()
-            {
-                NextListener = typeof(MainMenuMessageCommand)
-            };
-        }
-
         return await ExecuteCommandAsync(new ExecuteTelegramCommandRequest()
         {
             Message = message,

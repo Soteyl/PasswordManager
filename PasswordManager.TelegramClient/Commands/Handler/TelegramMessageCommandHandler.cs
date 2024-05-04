@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using PasswordManager.TelegramClient.Resources;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -25,10 +26,15 @@ public class TelegramMessageCommandHandler(IServiceProvider serviceProvider, IMe
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         if (update.Message is null) return;
+        if (update.Message.Text == MessageButtons.Cancel)
+        {
+            await Commands[typeof(CancelMessageCommand)].ExecuteAsync(update.Message, botClient, cancellationToken);
+            return;
+        }
 
-        var cachedListener = memoryCache.Get<Type>(GetListenerCacheKey(update.Message.Chat.Id));
-        if (cachedListener is not null)
-            memoryCache.Remove(GetListenerCacheKey(update.Message.Chat.Id));
+        var cacheKey = CacheConstraints.GetCommandListenerCacheKey(update.Message.Chat.Id);
+        var cachedListener = memoryCache.Get<Type>(cacheKey);
+        if (cachedListener is not null) memoryCache.Remove(cacheKey);
         
         var command = (cachedListener is null 
                           ? Commands.Values.FirstOrDefault(x => x.IsMatchAsync(update.Message, cancellationToken).Result)
@@ -39,7 +45,7 @@ public class TelegramMessageCommandHandler(IServiceProvider serviceProvider, IMe
 
         if (result.NextListener is not null)
         {
-            memoryCache.Set(GetListenerCacheKey(update.Message.Chat.Id), result.NextListener, TimeSpan.FromMinutes(10));
+            memoryCache.Set(cacheKey, result.NextListener, TimeSpan.FromMinutes(10));
         }
     }
 
@@ -65,6 +71,4 @@ public class TelegramMessageCommandHandler(IServiceProvider serviceProvider, IMe
 
         _wrongMessageCommand = ResolveCommandAsync<MainMenuMessageCommand>().Result;
     }
-    
-    private static string GetListenerCacheKey(long chatId) => $"Listener_{chatId}";
 }
