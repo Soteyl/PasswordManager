@@ -1,14 +1,16 @@
-using PasswordStorageService.Services;
+using PasswordStorageService.Data;
 using PasswordStorageService.Services.PasswordStorage;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddGrpc();
+builder.Services.AddDbContext<PasswordStorageContext>();
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 app.MapGrpcService<PasswordStorageController>();
 app.MapGet("/",
     () =>
