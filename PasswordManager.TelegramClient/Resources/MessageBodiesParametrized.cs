@@ -13,4 +13,9 @@ public static class MessageBodiesParametrized
         }
         return string.Format(MessageBodies.AccountsList, stringBuilder);
     } 
+    
+    public static string AddAccountFinalStep(string websiteNickname, string url, string username, string password)
+    {
+        return string.Format(MessageBodies.AddAccountFinalStep, url, websiteNickname, username, password);
+    }
 }

@@ -12,7 +12,7 @@ using PasswordStorageService.Data;
 namespace PasswordStorageService.Migrations
 {
     [DbContext(typeof(PasswordStorageContext))]
-    [Migration("20240504132047_Initial")]
+    [Migration("20240504150329_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -31,9 +31,13 @@ namespace PasswordStorageService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CredentialsHash")
+                    b.Property<byte[]>("CredentialsHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("bytea");
+
+                    b.Property<byte[]>("CredentialsSalt")
+                        .IsRequired()
+                        .HasColumnType("bytea");
 
                     b.Property<string>("User")
                         .IsRequired()

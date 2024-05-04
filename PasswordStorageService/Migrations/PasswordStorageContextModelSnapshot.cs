@@ -28,9 +28,13 @@ namespace PasswordStorageService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("CredentialsHash")
+                    b.Property<byte[]>("CredentialsHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("bytea");
+
+                    b.Property<byte[]>("CredentialsSalt")
+                        .IsRequired()
+                        .HasColumnType("bytea");
 
                     b.Property<string>("User")
                         .IsRequired()

@@ -70,11 +70,35 @@ namespace PasswordManager.TelegramClient.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Here is your account:
+        ///Url: {0}
+        ///Website: {1}
+        ///Username: {2}
+        ///Password: {3}
+        ///
+        ///Provide a master password to encrypt your data:.
+        /// </summary>
+        internal static string AddAccountFinalStep {
+            get {
+                return ResourceManager.GetString("AddAccountFinalStep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal error. Please contact a developer..
         /// </summary>
         internal static string InternalError {
             get {
                 return ResourceManager.GetString("InternalError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send your password for your website:.
+        /// </summary>
+        internal static string SendPasswordToAddAccount {
+            get {
+                return ResourceManager.GetString("SendPasswordToAddAccount", resourceCulture);
             }
         }
         
@@ -88,7 +112,16 @@ namespace PasswordManager.TelegramClient.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Send a nickname for yout website:.
+        ///   Looks up a localized string similar to Send your username for this website:.
+        /// </summary>
+        internal static string SendUserToAddAccount {
+            get {
+                return ResourceManager.GetString("SendUserToAddAccount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send a nickname for your website:.
         /// </summary>
         internal static string SendWebsiteNicknameToAddAccount {
             get {
@@ -106,11 +139,29 @@ namespace PasswordManager.TelegramClient.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Wrong master password. Please try again or cancel an action..
+        /// </summary>
+        internal static string WrongMasterPassword {
+            get {
+                return ResourceManager.GetString("WrongMasterPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Choose an option you want to do..
         /// </summary>
         internal static string WrongMessageWarningBody {
             get {
                 return ResourceManager.GetString("WrongMessageWarningBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wrong url format. Try again..
+        /// </summary>
+        internal static string WrongUrlFormat {
+            get {
+                return ResourceManager.GetString("WrongUrlFormat", resourceCulture);
             }
         }
         

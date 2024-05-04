@@ -18,7 +18,8 @@ public partial class PasswordStorageController
         {
             User = request.User,
             UserId = Guid.Parse(request.UserId),
-            CredentialsHash = request.CredentialsHash,
+            CredentialsHash = request.CredentialsHash.ToByteArray(),
+            CredentialsSalt = request.CredentialsSalt.ToByteArray(),
             WebsiteUrl = new Uri(request.Url),
             WebsiteNickName = request.WebsiteNickname
         });

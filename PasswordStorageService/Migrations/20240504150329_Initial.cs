@@ -17,7 +17,8 @@ namespace PasswordStorageService.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     User = table.Column<string>(type: "text", nullable: false),
-                    CredentialsHash = table.Column<string>(type: "text", nullable: false),
+                    CredentialsHash = table.Column<byte[]>(type: "bytea", nullable: false),
+                    CredentialsSalt = table.Column<byte[]>(type: "bytea", nullable: false),
                     WebsiteNickName = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     WebsiteUrl = table.Column<string>(type: "text", nullable: false)

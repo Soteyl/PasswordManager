@@ -9,7 +9,9 @@ public class AccountEntity
 
     public string User { get; set; } = null!;
 
-    public string CredentialsHash { get; set; } = null!;
+    public byte[] CredentialsHash { get; set; } = null!;
+    
+    public byte[] CredentialsSalt { get; set; } = null!;
 
     public string WebsiteNickName { get; set; } = null!;
     

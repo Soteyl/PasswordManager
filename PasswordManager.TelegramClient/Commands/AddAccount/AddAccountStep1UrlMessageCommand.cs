@@ -5,7 +5,7 @@ using Telegram.Bot;
 
 namespace PasswordManager.TelegramClient.Commands.AddAccount;
 
-public class AddAccountUrlMessageCommand(IUserDataRepository userDataRepository): MessageCommand(userDataRepository)
+public class AddAccountStep1UrlMessageCommand(IUserDataRepository userDataRepository): MessageCommand(userDataRepository)
 {
     protected override List<string> Commands { get; } = [MessageButtons.AddAccount];
 
@@ -16,7 +16,7 @@ public class AddAccountUrlMessageCommand(IUserDataRepository userDataRepository)
             cancellationToken: cancellationToken);
         return new ExecuteTelegramCommandResult()
         {
-            NextListener = typeof(AddAccountWebsiteNicknameMessageCommand)
+            NextListener = typeof(AddAccountStep2WebsiteNicknameMessageCommand)
         };
     }
 }

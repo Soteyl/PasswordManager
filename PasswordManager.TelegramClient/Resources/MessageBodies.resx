@@ -44,6 +44,27 @@
         <value>Send URL of your website:</value>
     </data>
     <data name="SendWebsiteNicknameToAddAccount" xml:space="preserve">
-        <value>Send a nickname for yout website:</value>
+        <value>Send a nickname for your website:</value>
+    </data>
+    <data name="SendUserToAddAccount" xml:space="preserve">
+        <value>Send your username for this website:</value>
+    </data>
+    <data name="SendPasswordToAddAccount" xml:space="preserve">
+        <value>Send your password for your website:</value>
+    </data>
+    <data name="AddAccountFinalStep" xml:space="preserve">
+        <value>Here is your account:
+Url: {0}
+Website: {1}
+Username: {2}
+Password: {3}
+
+Provide a master password to encrypt your data:</value>
+    </data>
+    <data name="WrongUrlFormat" xml:space="preserve">
+        <value>Wrong url format. Try again.</value>
+    </data>
+    <data name="WrongMasterPassword" xml:space="preserve">
+        <value>Wrong master password. Please try again or cancel an action.</value>
     </data>
 </root>
