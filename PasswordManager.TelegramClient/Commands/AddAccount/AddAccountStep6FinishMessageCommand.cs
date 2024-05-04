@@ -14,6 +14,8 @@ public class AddAccountStep6FinishMessageCommand(IUserDataRepository userDataRep
 {
     protected override async Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request, CancellationToken cancellationToken = default)
     {
+        await request.Client.DeleteMessageAsync(request.Message.Chat.Id, request.Message.MessageId, cancellationToken: cancellationToken);
+        
         var account = memoryCache.Get<AddAccountRequest>(CacheConstraints.GetAddAccountContractCacheKey(request.UserData.TelegramUserId));
         if (account == null) return new ExecuteTelegramCommandResult();
 

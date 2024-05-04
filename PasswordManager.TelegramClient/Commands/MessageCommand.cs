@@ -46,8 +46,27 @@ public abstract class MessageCommand(IUserDataRepository userDataRepository): IT
     protected abstract Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request,
         CancellationToken cancellationToken = default);
 
+    protected static ReplyKeyboardMarkup GetMarkup(string[][] buttons)
+    {
+        return new(buttons.Select(row => row.Select(x => new KeyboardButton(x))))
+        {
+            ResizeKeyboard = true
+        };
+    }
+    
     protected static ReplyKeyboardMarkup GetMarkup(params string[] buttons)
     {
+        return GetMarkup(false, buttons);
+    }
+    
+    protected static ReplyKeyboardMarkup GetMarkup(bool isVerticalAlignment = false, params string[] buttons)
+    {
+        if (isVerticalAlignment)
+            return new(buttons.Select(x => new[] { new KeyboardButton(x) }))
+            {
+                ResizeKeyboard = true
+            };
+        
         return new(buttons.Select(x => new KeyboardButton(x)))
         {
             ResizeKeyboard = true

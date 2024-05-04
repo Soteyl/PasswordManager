@@ -18,4 +18,9 @@ public static class MessageBodiesParametrized
     {
         return string.Format(MessageBodies.AddAccountFinalStep, url, websiteNickname, username, password);
     }
+
+    public static string GetCredentialsProvideMasterPassword(string url, string websiteNickname, string username)
+    {
+        return string.Format(MessageBodies.GetCredentialsProvideMasterPassword, url, websiteNickname, username);
+    }
 }

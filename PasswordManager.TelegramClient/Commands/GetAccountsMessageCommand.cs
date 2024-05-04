@@ -27,7 +27,7 @@ public class GetAccountsMessageCommand(IUserDataRepository userDataRepository,
             : MessageBodies.InternalError;
         
         await request.Client.SendTextMessageAsync(request.Message.Chat.Id, message, 
-            replyMarkup: GetMarkup(MessageButtons.AddAccount, MessageButtons.Cancel), disableWebPagePreview: true,
+            replyMarkup: GetMarkup(MessageButtons.GetAccountCredentials, MessageButtons.AddAccount, MessageButtons.Cancel), disableWebPagePreview: true,
             parseMode: ParseMode.MarkdownV2, cancellationToken: cancellationToken);
         return new ExecuteTelegramCommandResult();
     }

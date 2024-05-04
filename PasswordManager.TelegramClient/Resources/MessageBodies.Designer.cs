@@ -94,11 +94,51 @@ namespace PasswordManager.TelegramClient.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Choose account you want to get credentials of..
+        /// </summary>
+        internal static string ChooseAccountForCredentials {
+            get {
+                return ResourceManager.GetString("ChooseAccountForCredentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Url: {0}
+        ///Website name: {1}
+        ///Username: {2}
+        ///
+        ///To get credentials of this account you should provide a master password:.
+        /// </summary>
+        internal static string GetCredentialsProvideMasterPassword {
+            get {
+                return ResourceManager.GetString("GetCredentialsProvideMasterPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Here is your password. Copy it and use where you need. It will be automaticly deleted after 1 minute..
+        /// </summary>
+        internal static string HereIsYourPassword {
+            get {
+                return ResourceManager.GetString("HereIsYourPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal error. Please contact a developer..
         /// </summary>
         internal static string InternalError {
             get {
                 return ResourceManager.GetString("InternalError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send your master password to decrypt data:.
+        /// </summary>
+        internal static string SendMasterPasswordToEncrypt {
+            get {
+                return ResourceManager.GetString("SendMasterPasswordToEncrypt", resourceCulture);
             }
         }
         

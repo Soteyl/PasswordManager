@@ -6,5 +6,7 @@ public static class CacheConstraints
     
     public static string GetCommandListenerCacheKey(long chatId) => $"Listener_{chatId}";
     
+    public static string GetGetAccountCredentialsContractCacheKey(long userId) => $"GetAccountCredentials_{userId}";
+    
     public static TimeSpan AddAccountContractExpiration => TimeSpan.FromMinutes(5);
 }

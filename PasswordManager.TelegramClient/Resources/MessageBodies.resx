@@ -70,4 +70,20 @@ Provide a master password to encrypt your data:</value>
     <data name="AddAccountSuccess" xml:space="preserve">
         <value>You have been sucessfull added an account!</value>
     </data>
+    <data name="SendMasterPasswordToEncrypt" xml:space="preserve">
+        <value>Send your master password to decrypt data:</value>
+    </data>
+    <data name="GetCredentialsProvideMasterPassword" xml:space="preserve">
+        <value>Url: {0}
+Website name: {1}
+Username: {2}
+
+To get credentials of this account you should provide a master password:</value>
+    </data>
+    <data name="HereIsYourPassword" xml:space="preserve">
+        <value>Here is your password. Copy it and use where you need. It will be automaticly deleted after 1 minute.</value>
+    </data>
+    <data name="ChooseAccountForCredentials" xml:space="preserve">
+        <value>Choose account you want to get credentials of.</value>
+    </data>
 </root>

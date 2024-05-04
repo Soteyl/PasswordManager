@@ -96,6 +96,15 @@ namespace PasswordManager.TelegramClient.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Get account credentials.
+        /// </summary>
+        internal static string GetAccountCredentials {
+            get {
+                return ResourceManager.GetString("GetAccountCredentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Get account password.
         /// </summary>
         internal static string GetAccountPassword {

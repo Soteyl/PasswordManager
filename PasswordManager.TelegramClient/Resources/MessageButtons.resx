@@ -39,4 +39,7 @@
     <data name="Return" xml:space="preserve">
         <value>Return to menu</value>
     </data>
+    <data name="GetAccountCredentials" xml:space="preserve">
+        <value>Get account credentials</value>
+    </data>
 </root>
