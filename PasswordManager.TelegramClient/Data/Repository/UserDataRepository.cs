@@ -17,7 +17,7 @@ public class UserDataRepository(TelegramClientContext context, IMemoryCache cach
             return userData!;
         }
 
-        userData = await context.TelegramUserData.AsNoTracking()
+        userData = await context.Users.AsNoTracking()
             .FirstOrDefaultAsync(x => x.TelegramUserId == telegramUserId, cancellationToken);
         
         if (userData == null)
@@ -37,7 +37,7 @@ public class UserDataRepository(TelegramClientContext context, IMemoryCache cach
     
     public async Task ChangeLocaleAsync(long telegramUserId, Locale locale, CancellationToken cancellationToken = default)
     {
-        var userData = await context.TelegramUserData.AsNoTracking()
+        var userData = await context.Users.AsNoTracking()
             .FirstAsync(x => x.TelegramUserId == telegramUserId, cancellationToken);
         
         userData.Locale = locale;
@@ -50,7 +50,7 @@ public class UserDataRepository(TelegramClientContext context, IMemoryCache cach
     public async Task ChangeMasterPasswordAsync(long telegramUserId, string masterPassword,
         CancellationToken cancellationToken = default)
     {
-        var userData = await context.TelegramUserData
+        var userData = await context.Users
             .FirstAsync(x => x.TelegramUserId == telegramUserId, cancellationToken);
         
         userData.MasterPasswordHash = Cryptographer.GetHash(masterPassword);

@@ -8,5 +8,9 @@ public static class CacheConstraints
     
     public static string GetGetAccountCredentialsContractCacheKey(long userId) => $"GetAccountCredentials_{userId}";
     
+    public static string GetActiveInputFormCacheKey(long userId) => $"ActiveInputForm_{userId}";
+    
+    public static string GetActiveInputFormValidatorCacheKey(long userId) => $"ActiveInputFormValidator_{userId}";
+    
     public static TimeSpan AddAccountContractExpiration => TimeSpan.FromMinutes(5);
 }

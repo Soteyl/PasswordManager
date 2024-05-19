@@ -17,7 +17,7 @@ public class GetAccountsMessageCommand(IUserDataRepository userDataRepository,
         var accounts = await storageService.GetAccountsAsync(new GetAccountsRequest()
         {
             Limit = 100,
-            UserId = request.UserData.Id.ToString()
+            UserId = request.UserData.InternalId.ToString()
         }, cancellationToken: cancellationToken);
 
         var message = accounts.Response.IsSuccess 

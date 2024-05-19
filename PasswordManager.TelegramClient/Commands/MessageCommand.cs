@@ -19,9 +19,9 @@ public abstract class MessageCommand(IUserDataRepository userDataRepository): IT
         return Task.FromResult(Commands.Contains(message.Text!));
     }
 
-    public async Task<ExecuteTelegramCommandResult> ExecuteAsync(Message message, ITelegramBotClient client, CancellationToken cancellationToken = default)
+    public async Task<ExecuteTelegramCommandResult?> ExecuteAsync(Message message, ITelegramBotClient client, CancellationToken cancellationToken = default)
     {
-        var userData = await userDataRepository.GetUserDataAsync(message.Chat.Id, cancellationToken);
+        var userData = await userDataRepository.GetUserDataAsync(message.From.Id, cancellationToken);
         CultureInfo.CurrentCulture = userData.Locale.ToCulture();
         
         if (MasterPasswordNeeded && string.IsNullOrEmpty(userData.MasterPasswordHash))
@@ -43,9 +43,12 @@ public abstract class MessageCommand(IUserDataRepository userDataRepository): IT
         }, cancellationToken);
     }
 
-    protected abstract Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request,
+    protected abstract Task<ExecuteTelegramCommandResult?> ExecuteCommandAsync(ExecuteTelegramCommandRequest request,
         CancellationToken cancellationToken = default);
 
+    
+    #region keyboard markup
+    
     protected static ReplyKeyboardMarkup GetMarkup(string[][] buttons)
     {
         return new(buttons.Select(row => row.Select(x => new KeyboardButton(x))))
@@ -72,4 +75,6 @@ public abstract class MessageCommand(IUserDataRepository userDataRepository): IT
             ResizeKeyboard = true
         };
     }
+    
+    #endregion
 }

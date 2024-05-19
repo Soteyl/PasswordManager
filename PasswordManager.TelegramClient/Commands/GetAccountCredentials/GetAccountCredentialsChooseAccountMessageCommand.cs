@@ -7,13 +7,11 @@ namespace PasswordManager.TelegramClient.Commands.GetAccountCredentials;
 
 public class GetAccountCredentialsChooseAccountMessageCommand(IUserDataRepository userDataRepository, PasswordStorageService.PasswordStorageServiceClient passwordStorageService) : MessageCommand(userDataRepository)
 {
-    protected override List<string> Commands { get; } = [MessageButtons.GetAccountCredentials];
-
     protected override async Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request, CancellationToken cancellationToken = default)
     {
         var accounts = await passwordStorageService.GetAccountsAsync(new GetAccountsRequest()
         {
-            UserId = request.UserData.Id.ToString(),
+            UserId = request.UserData.InternalId.ToString(),
             Limit = 100
         }, cancellationToken: cancellationToken);
         var message = MessageBodies.ChooseAccountForCredentials;
@@ -28,9 +26,6 @@ public class GetAccountCredentialsChooseAccountMessageCommand(IUserDataRepositor
         await request.Client.SendTextMessageAsync(request.Message.Chat.Id, message,
             replyMarkup: GetMarkup(true, accountsMarkup.ToArray()), cancellationToken: cancellationToken);
 
-        return new ExecuteTelegramCommandResult()
-        {
-            NextListener = typeof(GetAccountCredentialsTypeMasterPasswordMessageCommand)
-        };
+        return new ExecuteTelegramCommandResult();
     }
 }

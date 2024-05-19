@@ -6,10 +6,17 @@ namespace PasswordManager.TelegramClient.Data;
 
 public class TelegramClientContext: DbContext
 {
-    public DbSet<TelegramUserDataEntity> TelegramUserData { get; set; }
+    public DbSet<TelegramUserDataEntity> Users { get; set; }
+    
+    public DbSet<TelegramUserRequestFormEntity> RequestForms { get; set; }
     
     public TelegramClientContext(DbContextOptions<TelegramClientContext> options): base(options)
     { }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(TelegramClientContext).Assembly);
+    }
 }
 
 public class TelegramClientContextFactory : IDesignTimeDbContextFactory<TelegramClientContext>

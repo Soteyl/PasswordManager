@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using PasswordManager.TelegramClient.Resources;
 using Telegram.Bot;
@@ -8,7 +7,7 @@ using Telegram.Bot.Types;
 
 namespace PasswordManager.TelegramClient.Commands.Handler;
 
-public class TelegramMessageCommandHandler(IServiceProvider serviceProvider, IMemoryCache memoryCache): IUpdateHandler, ITelegramCommandResolver
+public class TelegramMessageCommandHandler(IServiceProvider serviceProvider, TelegramFormMessageHandler formMessageHandler): IUpdateHandler, ITelegramCommandResolver
 {
     private Dictionary<Type, ITelegramCommand>? _commands = null;
 
@@ -32,21 +31,17 @@ public class TelegramMessageCommandHandler(IServiceProvider serviceProvider, IMe
             return;
         }
 
-        var cacheKey = CacheConstraints.GetCommandListenerCacheKey(update.Message.Chat.Id);
-        var cachedListener = memoryCache.Get<Type>(cacheKey);
-        if (cachedListener is not null) memoryCache.Remove(cacheKey);
+        var hasActiveForm = await formMessageHandler.HasActiveFormAsync(update.Message.From!.Id, cancellationToken);
+        if (hasActiveForm)
+        {
+            _ = formMessageHandler.HandleFormRequestAsync(botClient, update.Message, cancellationToken);
+            return;
+        }
         
-        var command = (cachedListener is null 
-                          ? Commands.Values.FirstOrDefault(x => x.IsMatchAsync(update.Message, cancellationToken).Result)
-                          : Commands.GetValueOrDefault(cachedListener)) 
+        var command = Commands.Values.FirstOrDefault(x => x.IsMatchAsync(update.Message, cancellationToken).Result)
                       ?? _wrongMessageCommand;
         
-        var result = await command.ExecuteAsync(update.Message, botClient, cancellationToken);
-
-        if (result.NextListener is not null)
-        {
-            memoryCache.Set(cacheKey, result.NextListener, TimeSpan.FromMinutes(10));
-        }
+        _ = command.ExecuteAsync(update.Message, botClient, cancellationToken);
     }
 
     public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
