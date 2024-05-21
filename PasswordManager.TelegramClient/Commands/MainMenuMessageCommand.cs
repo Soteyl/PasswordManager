@@ -1,11 +1,13 @@
 ﻿using PasswordManager.TelegramClient.Commands.Contracts;
+using PasswordManager.TelegramClient.Commands.Handler;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Resources;
 using Telegram.Bot;
 
 namespace PasswordManager.TelegramClient.Commands;
 
-public class MainMenuMessageCommand(IUserDataRepository userDataRepository): MessageCommand(userDataRepository)
+public class MainMenuMessageCommand(IUserDataRepository userDataRepository, TelegramFormMessageHandler formMessageHandler)
+    : MessageCommand(userDataRepository, formMessageHandler)
 {
     protected override async Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request, CancellationToken cancellationToken = default)
     {

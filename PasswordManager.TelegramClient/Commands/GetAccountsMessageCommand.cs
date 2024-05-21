@@ -1,4 +1,5 @@
 ﻿using PasswordManager.TelegramClient.Commands.Contracts;
+using PasswordManager.TelegramClient.Commands.Handler;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Resources;
 using Telegram.Bot;
@@ -8,7 +9,8 @@ using Telegram.Bot.Types.ReplyMarkups;
 namespace PasswordManager.TelegramClient.Commands;
 
 public class GetAccountsMessageCommand(IUserDataRepository userDataRepository,
-    PasswordStorageService.PasswordStorageServiceClient storageService) : MessageCommand(userDataRepository)
+    PasswordStorageService.PasswordStorageServiceClient storageService, TelegramFormMessageHandler formMessageHandler) 
+    : MessageCommand(userDataRepository, formMessageHandler)
 {
     protected override List<string> Commands { get; } = [MessageButtons.ShowMyAccounts];
 
@@ -25,9 +27,17 @@ public class GetAccountsMessageCommand(IUserDataRepository userDataRepository,
             ? MessageBodies.YouHaveNoAccounts
             : MessageBodiesParametrized.AccountsList(accounts.Accounts.ToList())
             : MessageBodies.InternalError;
+
+        var messageButtons = new List<string>()
+        {
+            MessageButtons.AddAccount,
+            MessageButtons.Cancel
+        };
+        if (accounts.Accounts.Count > 0)
+            messageButtons.Add(MessageButtons.GetAccountCredentials);
         
         await request.Client.SendTextMessageAsync(request.Message.Chat.Id, message, 
-            replyMarkup: GetMarkup(MessageButtons.GetAccountCredentials, MessageButtons.AddAccount, MessageButtons.Cancel), disableWebPagePreview: true,
+            replyMarkup: GetMarkup(messageButtons.ToArray()), disableWebPagePreview: true,
             parseMode: ParseMode.MarkdownV2, cancellationToken: cancellationToken);
         return new ExecuteTelegramCommandResult();
     }

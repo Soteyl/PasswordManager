@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 using PasswordManager.TelegramClient.Commands.Contracts;
+using PasswordManager.TelegramClient.Commands.Handler;
+using PasswordManager.TelegramClient.Commands.SetUpMasterPassword;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Resources;
 using Telegram.Bot;
@@ -8,7 +10,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.TelegramClient.Commands;
 
-public abstract class MessageCommand(IUserDataRepository userDataRepository): ITelegramCommand
+public abstract class MessageCommand(IUserDataRepository userDataRepository, TelegramFormMessageHandler formHandler): ITelegramCommand
 {
     protected bool MasterPasswordNeeded { get; set; } = true;
     
@@ -26,13 +28,9 @@ public abstract class MessageCommand(IUserDataRepository userDataRepository): IT
         
         if (MasterPasswordNeeded && string.IsNullOrEmpty(userData.MasterPasswordHash))
         {
-            await client.SendTextMessageAsync(message.Chat.Id, MessageBodies.SetUpMasterPasswordMessageBody, 
-                replyMarkup: new ReplyKeyboardRemove(), cancellationToken: cancellationToken);
+            await formHandler.StartFormRequestAsync<SetUpMasterPasswordFormRegistration>(client, message.From.Id, message.Chat.Id, cancellationToken);
 
-            return new ExecuteTelegramCommandResult()
-            {
-                NextListener = typeof(SetMasterPasswordMessageCommand)
-            };
+            return new ExecuteTelegramCommandResult();
         }
 
         return await ExecuteCommandAsync(new ExecuteTelegramCommandRequest()

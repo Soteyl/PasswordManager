@@ -5,7 +5,8 @@ using PasswordManager.TelegramClient.Resources;
 
 namespace PasswordManager.TelegramClient.Commands.GetAccountCredentials;
 
-public class GetAccountCredentialsMessageCommand(IUserDataRepository userDataRepository, TelegramFormMessageHandler formHandler) : MessageCommand(userDataRepository)
+public class GetAccountCredentialsMessageCommand(IUserDataRepository userDataRepository, TelegramFormMessageHandler formHandler) 
+    : MessageCommand(userDataRepository, formHandler)
 {
     protected override List<string> Commands { get; } = [MessageButtons.GetAccountCredentials];
 

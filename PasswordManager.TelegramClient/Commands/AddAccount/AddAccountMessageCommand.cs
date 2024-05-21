@@ -5,13 +5,16 @@ using PasswordManager.TelegramClient.Resources;
 
 namespace PasswordManager.TelegramClient.Commands.AddAccount;
 
-public class AddAccountMessageCommand(IUserDataRepository userDataRepository, TelegramFormMessageHandler formHandler) : MessageCommand(userDataRepository)
+public class AddAccountMessageCommand(IUserDataRepository userDataRepository, TelegramFormMessageHandler formHandler) 
+    : MessageCommand(userDataRepository, formHandler)
 {
+    private readonly TelegramFormMessageHandler _formHandler = formHandler;
+
     protected override List<string> Commands { get; } = [MessageButtons.AddAccount];
 
     protected override async Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request, CancellationToken cancellationToken = default)
     {
-        await formHandler.StartFormRequestAsync<AddAccountFormRegistration>(request.Client, request.UserData.TelegramUserId, request.Message.Chat.Id, cancellationToken);
+        await _formHandler.StartFormRequestAsync<AddAccountFormRegistration>(request.Client, request.UserData.TelegramUserId, request.Message.Chat.Id, cancellationToken);
         
         return new ExecuteTelegramCommandResult();
     }

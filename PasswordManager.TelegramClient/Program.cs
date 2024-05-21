@@ -34,7 +34,7 @@ builder.Services.AddAllFormRegistrations(Assembly.GetExecutingAssembly());
 builder.Services.AddSingleton<TelegramFormMessageHandler>();
     
 builder.Services.AddSingleton<IUpdateHandler, TelegramMessageCommandHandler>();
-builder.Services.AddSingleton<ITelegramCommandResolver, TelegramMessageCommandHandler>();
+builder.Services.AddSingleton<ITelegramCommandResolver, TelegramMessageCommandResolver>();
 builder.Services.AddHostedService<TelegramUpdatesReceiver>();
 
 var app = builder.Build();

@@ -87,7 +87,7 @@ public class TelegramFormMessageHandler
                 return;
             }
             formEntity.Data ??= new();
-            formEntity.Data.Add(currentStep.AnswerKey, validateResult!.ValidResult!);
+            formEntity.Data.Add(currentStep.AnswerKey, validateResult?.ValidResult ?? message.Text!);
         }
         
         formEntity.CurrentStep++;
@@ -123,7 +123,7 @@ public class TelegramFormMessageHandler
         var currentForm = _formModels[formEntity.FormType];
         var currentStep = currentForm.Steps.ElementAt(formEntity.CurrentStep);
         IReplyMarkup markup = new ReplyKeyboardRemove();
-        if (currentStep.Answers is not null)
+        if (currentStep.Answers is not null && currentStep.Answers.Any())
             markup = new ReplyKeyboardMarkup(currentStep.Answers.Select(x => x.Select(y => new KeyboardButton(y))))
             {
                 ResizeKeyboard = true

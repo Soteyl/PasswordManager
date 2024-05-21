@@ -1,11 +1,14 @@
 ﻿using PasswordManager.TelegramClient.Commands.Contracts;
+using PasswordManager.TelegramClient.Commands.Handler;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Resources;
 using Telegram.Bot;
 
 namespace PasswordManager.TelegramClient.Commands.GetAccountCredentials;
 
-public class GetAccountCredentialsChooseAccountMessageCommand(IUserDataRepository userDataRepository, PasswordStorageService.PasswordStorageServiceClient passwordStorageService) : MessageCommand(userDataRepository)
+public class GetAccountCredentialsChooseAccountMessageCommand(IUserDataRepository userDataRepository, 
+    PasswordStorageService.PasswordStorageServiceClient passwordStorageService, TelegramFormMessageHandler formMessageHandler) 
+    : MessageCommand(userDataRepository, formMessageHandler)
 {
     protected override async Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request, CancellationToken cancellationToken = default)
     {

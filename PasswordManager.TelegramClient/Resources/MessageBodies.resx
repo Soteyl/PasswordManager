@@ -31,7 +31,7 @@
         <value>Your master password is successfully applied!</value>
     </data>
     <data name="YouHaveNoAccounts" xml:space="preserve">
-        <value>Your accounts list is empty.</value>
+        <value>Your accounts list is empty\.</value>
     </data>
     <data name="AccountsList" xml:space="preserve">
         <value>Here is your accounts:
