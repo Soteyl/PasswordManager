@@ -42,7 +42,7 @@ public class AddAccountFormRegistration(PasswordStorageService.PasswordStorageSe
             .AddStep(s => s.Builder
                 .WithQuestion(MessageBodies.AddAccountFinalStep)
                 .WithAnswerKey(MasterPassword)
-                .ValidateAnswer(MasterPasswordValidation.IsValidMasterPassword)
+                .ValidateAnswer(Validators.MasterPassword)
                 .DeleteQuestionAfterAnswer()
                 .DeleteAnswerMessage())
             .OnComplete(OnComplete)

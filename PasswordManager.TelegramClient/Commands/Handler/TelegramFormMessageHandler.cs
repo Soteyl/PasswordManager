@@ -79,7 +79,8 @@ public class TelegramFormMessageHandler
             var validateResult = currentStep.Validator?.Invoke(new ValidateAnswerEventArgs()
             {
                 Answer = message.Text!,
-                UserData = userData
+                UserData = userData,
+                Context = formEntity.Data
             }, cancellationToken);
             if (validateResult is { IsSuccess: false })
             {

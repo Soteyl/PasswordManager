@@ -47,7 +47,7 @@ public abstract class MessageCommand(IUserDataRepository userDataRepository, Tel
     
     #region keyboard markup
     
-    protected static ReplyKeyboardMarkup GetMarkup(string[][] buttons)
+    protected static ReplyKeyboardMarkup GetMarkup(IEnumerable<IEnumerable<string>> buttons)
     {
         return new(buttons.Select(row => row.Select(x => new KeyboardButton(x))))
         {

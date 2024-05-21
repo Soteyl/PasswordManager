@@ -23,4 +23,9 @@ public static class MessageBodiesParametrized
     {
         return string.Format(MessageBodies.GetCredentialsProvideMasterPassword, url, websiteNickname, username);
     }
+    
+    public static string DeleteAccountConfirmation(string url, string websiteNickname, string username)
+    {
+        return string.Format(MessageBodies.DeleteAccountConfirmation, url, websiteNickname, username);
+    }
 }

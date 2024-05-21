@@ -36,7 +36,7 @@ public class GetAccountCredentialsFormRegistration(PasswordStorageService.Passwo
                 return s.Builder
                         .WithQuestion(message)
                         .WithAnswers(accountsMarkup.Select(x => new []{x}))
-                        .ValidateAnswer(ValidateAccount)
+                        .ValidateAnswer((args, ct) => Validators.Account(args, passwordStorageService, ct))
                         .WithAnswerKey(Account);
             })
             .AddStep(s =>
@@ -48,7 +48,7 @@ public class GetAccountCredentialsFormRegistration(PasswordStorageService.Passwo
                         .WithAnswerKey(MasterPassword)
                         .DeleteAnswerMessage()
                         .WithAnswerRow(MessageButtons.Cancel)
-                        .ValidateAnswer(MasterPasswordValidation.IsValidMasterPassword);
+                        .ValidateAnswer(Validators.MasterPassword);
             })
             .OnComplete(OnComplete).Build();
     }
@@ -84,23 +84,5 @@ public class GetAccountCredentialsFormRegistration(PasswordStorageService.Passwo
         
         await eventArgs.Client.DeleteMessageAsync(eventArgs.ChatId, passwordMessage.MessageId,
             cancellationToken: cancellationToken);
-    }
-
-    private FormValidateResult ValidateAccount(ValidateAnswerEventArgs eventArgs, CancellationToken cancellationToken)
-    {
-        var splittedMessageData = eventArgs.Answer.Split(" ");
-        var account = passwordStorageService.GetAccountByWebsiteNicknameAndUser(new GetAccountByWebsiteNicknameAndUserRequest()
-        {
-            UserId = eventArgs.UserData.InternalId.ToString(),
-            WebsiteNickname = splittedMessageData[0],
-            AccountUser = splittedMessageData[1].Replace("(", "").Replace(")", "")
-        });
-        bool isSuccess = account.Response.IsSuccess && account.Account != null;
-        return new FormValidateResult()
-        {
-            IsSuccess = isSuccess,
-            Error = isSuccess ? null : MessageBodies.InternalError,
-            ValidResult = isSuccess ? JsonConvert.SerializeObject(account.Account) : null
-        };
     }
 }

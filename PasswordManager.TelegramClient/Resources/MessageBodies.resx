@@ -86,4 +86,17 @@ To get credentials of this account you should provide a master password:</value>
     <data name="ChooseAccountForCredentials" xml:space="preserve">
         <value>Choose account you want to get credentials of.</value>
     </data>
+    <data name="DeleteAccountConfirmation" xml:space="preserve">
+        <value>Url: {0}
+Website name: {1}
+Username: {2}
+
+Are you sure to delete this account? Type website name for this account to confirm:</value>
+    </data>
+    <data name="WrongDeleteAccountConfirmation" xml:space="preserve">
+        <value>Website nickname you typed is wrong. Try again or cancel:</value>
+    </data>
+    <data name="AccountDeleted" xml:space="preserve">
+        <value>Account is successfully deleted!</value>
+    </data>
 </root>

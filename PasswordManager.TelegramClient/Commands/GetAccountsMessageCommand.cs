@@ -28,17 +28,20 @@ public class GetAccountsMessageCommand(IUserDataRepository userDataRepository,
             : MessageBodiesParametrized.AccountsList(accounts.Accounts.ToList())
             : MessageBodies.InternalError;
 
-        var messageButtons = new List<string>()
+        var messageButtons = new List<List<string>>()
         {
-            MessageButtons.AddAccount
+            new() { MessageButtons.AddAccount },
+            new() { MessageButtons.Cancel }
         };
+
         if (accounts.Accounts.Count > 0)
-            messageButtons.Add(MessageButtons.GetAccountCredentials);
-        
-        messageButtons.Add(MessageButtons.Cancel);
+        {
+            messageButtons[0].Add(MessageButtons.GetAccountCredentials);
+            messageButtons[0].Add(MessageButtons.DeleteAccount);
+        }
         
         await request.Client.SendTextMessageAsync(request.Message.Chat.Id, message, 
-            replyMarkup: GetMarkup(messageButtons.ToArray()), disableWebPagePreview: true,
+            replyMarkup: GetMarkup(messageButtons), disableWebPagePreview: true,
             parseMode: ParseMode.MarkdownV2, cancellationToken: cancellationToken);
         return new ExecuteTelegramCommandResult();
     }

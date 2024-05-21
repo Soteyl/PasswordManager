@@ -158,5 +158,23 @@ namespace PasswordManager.TelegramClient.Resources {
                 return ResourceManager.GetString("ChooseAccountForCredentials", resourceCulture);
             }
         }
+        
+        internal static string DeleteAccountConfirmation {
+            get {
+                return ResourceManager.GetString("DeleteAccountConfirmation", resourceCulture);
+            }
+        }
+        
+        internal static string WrongDeleteAccountConfirmation {
+            get {
+                return ResourceManager.GetString("WrongDeleteAccountConfirmation", resourceCulture);
+            }
+        }
+        
+        internal static string AccountDeleted {
+            get {
+                return ResourceManager.GetString("AccountDeleted", resourceCulture);
+            }
+        }
     }
 }
