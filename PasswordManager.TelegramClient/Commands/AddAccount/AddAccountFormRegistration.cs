@@ -21,25 +21,25 @@ public class AddAccountFormRegistration(PasswordStorageService.PasswordStorageSe
     {
         var cancelKeyboard = new KeyboardBuilder().Cancel().Build();
         return new FormBuilder()
-            .AddStep(s => s
+            .AddStep(s => s.Builder
                 .WithQuestion(MessageBodies.SendUrlToAddAccount)
                 .WithAnswerKey(Url)
                 .ValidateAnswer(IsValidUrl)
                 .WithAnswers(cancelKeyboard))
-            .AddStep(s => s
+            .AddStep(s => s.Builder
                 .WithQuestion(MessageBodies.SendWebsiteNicknameToAddAccount)
                 .WithAnswerKey(WebsiteNickname)
                 .WithAnswers(cancelKeyboard))
-            .AddStep(s => s
+            .AddStep(s => s.Builder
                 .WithQuestion(MessageBodies.SendUserToAddAccount)
                 .WithAnswerKey(Username)
                 .WithAnswers(cancelKeyboard))
-            .AddStep(s => s
+            .AddStep(s => s.Builder
                 .WithQuestion(MessageBodies.SendPasswordToAddAccount)
                 .WithAnswerKey(Password)
                 .WithAnswers(cancelKeyboard)
                 .DeleteAnswerMessage())
-            .AddStep(s => s
+            .AddStep(s => s.Builder
                 .WithQuestion(MessageBodies.AddAccountFinalStep)
                 .WithAnswerKey(MasterPassword)
                 .ValidateAnswer(MasterPasswordValidation.IsValidMasterPassword)

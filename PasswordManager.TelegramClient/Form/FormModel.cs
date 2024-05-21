@@ -1,6 +1,4 @@
-﻿using Telegram.Bot;
-
-namespace PasswordManager.TelegramClient.Form;
+﻿namespace PasswordManager.TelegramClient.Form;
 
 public class FormModel(IReadOnlyCollection<FormStep> steps, OnCompleteDelegate onComplete)
 {

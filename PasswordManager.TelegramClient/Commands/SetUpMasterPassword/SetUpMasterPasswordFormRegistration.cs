@@ -15,7 +15,7 @@ public class SetUpMasterPasswordFormRegistration(
     public FormModel ResolveForm()
     {
         return new FormBuilder()
-               .AddStep(s => s
+               .AddStep(s => s.Builder
                              .WithQuestion(MessageBodies.SetUpMasterPasswordMessageBody)
                              .DeleteAnswerMessage()
                              .WithAnswerKey(MasterPassword))

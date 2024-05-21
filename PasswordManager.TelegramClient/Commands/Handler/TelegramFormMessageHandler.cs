@@ -3,7 +3,6 @@ using PasswordManager.TelegramClient.Data;
 using PasswordManager.TelegramClient.Data.Entities;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Form;
-using PasswordManager.TelegramClient.Keyboard;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -47,6 +46,7 @@ public class TelegramFormMessageHandler
         };
         await _context.RequestForms.AddAsync(formEntity, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
+        await _context.Entry(formEntity).Reference(x => x.User).LoadAsync(cancellationToken);
 
         await WriteQuestionAsync(client, chatId, formEntity, cancellationToken);
         await HandleFormRequestAsync(client, new Message()
@@ -70,7 +70,7 @@ public class TelegramFormMessageHandler
         var userData = await _userDataRepository.GetUserDataAsync(message.From.Id, cancellationToken);
         
         var currentForm = _formModels[formEntity.FormType];
-        var currentStep = currentForm.Steps.ElementAt(formEntity.CurrentStep);
+        var currentStep = await currentForm.Steps.ElementAt(formEntity.CurrentStep).BuildAsync(userData, formEntity.Data!, cancellationToken);
 
         if (!currentStep.IsWithoutAnswer)
         {
@@ -121,14 +121,14 @@ public class TelegramFormMessageHandler
     private async Task WriteQuestionAsync(ITelegramBotClient client, long chatId, TelegramUserRequestFormEntity formEntity, CancellationToken cancellationToken = default)
     {
         var currentForm = _formModels[formEntity.FormType];
-        var currentStep = currentForm.Steps.ElementAt(formEntity.CurrentStep);
+        var currentStep = await currentForm.Steps.ElementAt(formEntity.CurrentStep).BuildAsync(formEntity.User, formEntity.Data!, cancellationToken);
         IReplyMarkup markup = new ReplyKeyboardRemove();
         if (currentStep.Answers is not null && currentStep.Answers.Any())
             markup = new ReplyKeyboardMarkup(currentStep.Answers.Select(x => x.Select(y => new KeyboardButton(y))))
             {
                 ResizeKeyboard = true
             };
-        var questionMessage = await client.SendTextMessageAsync(chatId, await currentStep.Question(formEntity.Data), 
+        var questionMessage = await client.SendTextMessageAsync(chatId, currentStep.Question, 
             replyMarkup: markup, cancellationToken: cancellationToken);
         if (currentStep.TimeBeforeQuestionDeletion.HasValue)
             _ = DeleteMessageAfterDelayAsync(client, chatId, questionMessage.MessageId,
@@ -139,6 +139,7 @@ public class TelegramFormMessageHandler
         CancellationToken cancellationToken = default)
     {
         return await (asNoTracking ? _context.RequestForms.AsNoTracking() : _context.RequestForms)
+                     .Include(x => x.User)
             .FirstOrDefaultAsync(x => x.User.TelegramUserId.Equals(telegramUserId), cancellationToken);
     }
     

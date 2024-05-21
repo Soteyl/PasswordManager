@@ -30,11 +30,12 @@ public class GetAccountsMessageCommand(IUserDataRepository userDataRepository,
 
         var messageButtons = new List<string>()
         {
-            MessageButtons.AddAccount,
-            MessageButtons.Cancel
+            MessageButtons.AddAccount
         };
         if (accounts.Accounts.Count > 0)
             messageButtons.Add(MessageButtons.GetAccountCredentials);
+        
+        messageButtons.Add(MessageButtons.Cancel);
         
         await request.Client.SendTextMessageAsync(request.Message.Chat.Id, message, 
             replyMarkup: GetMarkup(messageButtons.ToArray()), disableWebPagePreview: true,

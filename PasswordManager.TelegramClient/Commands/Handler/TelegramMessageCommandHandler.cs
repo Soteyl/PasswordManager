@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
-using PasswordManager.TelegramClient.Resources;
+﻿using PasswordManager.TelegramClient.Resources;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;

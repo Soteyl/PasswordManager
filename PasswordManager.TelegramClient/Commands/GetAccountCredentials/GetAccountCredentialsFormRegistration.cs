@@ -17,16 +17,39 @@ public class GetAccountCredentialsFormRegistration(PasswordStorageService.Passwo
     public FormModel ResolveForm()
     {
         return new FormBuilder()
-            .AddStep(s => s
-                .WithCustomCommand<GetAccountCredentialsChooseAccountMessageCommand>()
-                .ValidateAnswer(ValidateAccount)
-                .WithAnswerKey(Account))
-            .AddStep(s => s
-                .WithQuestion(GetMasterPasswordForAccountCredentialsQuestion)
-                .WithAnswerKey(MasterPassword)
-                .DeleteAnswerMessage()
-                .WithAnswerRow(MessageButtons.Cancel)
-                .ValidateAnswer(MasterPasswordValidation.IsValidMasterPassword))
+            .AddStep(s =>
+            {
+                var accounts = passwordStorageService.GetAccountsAsync(new GetAccountsRequest()
+                {
+                    UserId = s.UserData.InternalId.ToString(),
+                    Limit = 100
+                }).ResponseAsync.Result;
+                var message = MessageBodies.ChooseAccountForCredentials;
+                if (!accounts.Response.IsSuccess)
+                    message = MessageBodies.InternalError;
+                else if (accounts.Accounts.Count == 0)
+                    message = MessageBodies.YouHaveNoAccounts;
+                
+                var accountsMarkup = accounts.Accounts.Select(x => $"{x.WebsiteNickname} ({x.User})").ToList();
+                accountsMarkup.Add(MessageButtons.Cancel);
+                
+                return s.Builder
+                        .WithQuestion(message)
+                        .WithAnswers(accountsMarkup.Select(x => new []{x}))
+                        .ValidateAnswer(ValidateAccount)
+                        .WithAnswerKey(Account);
+            })
+            .AddStep(s =>
+            {
+                var account = JsonConvert.DeserializeObject<AccountInfo>(s.Data[Account])!;
+                return s.Builder
+                        .WithQuestion(MessageBodiesParametrized.GetCredentialsProvideMasterPassword(account.Url, 
+                            account.WebsiteNickname, account.User))
+                        .WithAnswerKey(MasterPassword)
+                        .DeleteAnswerMessage()
+                        .WithAnswerRow(MessageButtons.Cancel)
+                        .ValidateAnswer(MasterPasswordValidation.IsValidMasterPassword);
+            })
             .OnComplete(OnComplete).Build();
     }
 
@@ -61,13 +84,6 @@ public class GetAccountCredentialsFormRegistration(PasswordStorageService.Passwo
         
         await eventArgs.Client.DeleteMessageAsync(eventArgs.ChatId, passwordMessage.MessageId,
             cancellationToken: cancellationToken);
-    }
-
-    private Task<string> GetMasterPasswordForAccountCredentialsQuestion(Dictionary<string, string> context)
-    {
-        var account = JsonConvert.DeserializeObject<AccountInfo>(context[Account])!;
-        return Task.FromResult(MessageBodiesParametrized.GetCredentialsProvideMasterPassword(account.Url, 
-            account.WebsiteNickname, account.User));
     }
 
     private FormValidateResult ValidateAccount(ValidateAnswerEventArgs eventArgs, CancellationToken cancellationToken)

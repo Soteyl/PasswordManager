@@ -5,9 +5,9 @@ public class FormBuilder
     private List<FormStep> _steps = new();
     private OnCompleteDelegate _onComplete;
 
-    public FormBuilder AddStep(Func<FormStep, FormStep> step)
+    public FormBuilder AddStep(BuildFormStepDelegate step)
     {
-        _steps.Add(step(new FormStep()));
+        _steps.Add(new FormStep(step));
         return this;
     }
 
