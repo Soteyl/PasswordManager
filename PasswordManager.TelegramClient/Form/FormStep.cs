@@ -1,5 +1,6 @@
-﻿using PasswordManager.TelegramClient.Commands;
-using PasswordManager.TelegramClient.Data.Entities;
+﻿using PasswordManager.TelegramClient.Data.Entities;
+using PasswordManager.TelegramClient.Form.Contracts;
+using PasswordManager.TelegramClient.FormRegistrations.Handler;
 
 namespace PasswordManager.TelegramClient.Form;
 
@@ -8,8 +9,10 @@ public class FormStep
     private readonly BuildFormStepDelegate _buildFunc;
     
     private readonly List<List<string>> _answers = new();
+    
+    private readonly Dictionary<string, Type> _nextForms = new();
 
-    public string Question { get; set; }
+    public string? Question { get; set; }
 
     public IEnumerable<IEnumerable<string>>? Answers => _answers;
 
@@ -18,12 +21,14 @@ public class FormStep
     public TimeSpan? TimeBeforeQuestionDeletion { get; private set; }
 
     public bool IsDeleteQuestionAfterAnswer { get; private set; }
-
-    public bool IsWithoutAnswer { get; private set; }
+    
+    public bool IsDisableWebPagePreview { get; private set; }
 
     public string AnswerKey { get; private set; }
 
     public ValidateFormDelegate? Validator { get; private set; }
+
+    public IReadOnlyDictionary<string, Type> NextForms => _nextForms;
 
     public FormStep(BuildFormStepDelegate buildFunc)
     {
@@ -62,16 +67,16 @@ public class FormStep
         return this;
     }
 
-    public FormStep WithoutAnswer()
+    public FormStep DeleteAnswerMessage()
     {
-        IsWithoutAnswer = true;
+        IsDeleteAnswer = true;
 
         return this;
     }
 
-    public FormStep DeleteAnswerMessage()
+    public FormStep DisableWebPagePreview()
     {
-        IsDeleteAnswer = true;
+        IsDisableWebPagePreview = true;
 
         return this;
     }
@@ -97,14 +102,24 @@ public class FormStep
         return this;
     }
 
-    public async Task<FormStep> BuildAsync(TelegramUserDataEntity user, Dictionary<string, string> data,
+    public FormStep ExecuteAnotherForm<TForm>(string? answerCondition = null)
+        where TForm : IFormRegistration
+    {
+        answerCondition ??= string.Empty;
+        _nextForms.Add(answerCondition, typeof(TForm));
+        return this;
+    }
+
+    public async Task<FormStep> BuildAsync(TelegramUserDataEntity user, Dictionary<string, string> data, 
+        TelegramFormMessageHandler formMessageHandler,
         CancellationToken cancellationToken = default)
     {
         return _buildFunc(new BuildFormStepEventArgs()
         {
             UserData = user,
             Data = data,
-            Builder = new FormStep()
+            Builder = new FormStep(),
+            FormMessageHandler = formMessageHandler
         });
     }
 }

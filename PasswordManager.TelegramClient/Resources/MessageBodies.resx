@@ -94,4 +94,22 @@ Provide a master password to encrypt your data:</value>
     <data name="AccountDeleted" xml:space="preserve">
         <value>🗑 **Account successfully deleted!**</value>
     </data>
+    <data name="ChangeMasterPasswordConditions" xml:space="preserve">
+        <value>To change your master password securely, please write your old password and new password in a new line two times like this:
+oldPassword
+newPassword
+newPassword</value>
+    </data>
+    <data name="WrongLinesCount" xml:space="preserve">
+        <value>You wrote wrong lines count! Try again.</value>
+    </data>
+    <data name="NewMasterPasswordNotMatch" xml:space="preserve">
+        <value>New master passwords not match. Check and try again.</value>
+    </data>
+    <data name="MasterPasswordChanged" xml:space="preserve">
+        <value>Master password changed!</value>
+    </data>
+    <data name="ChooseSettingsToUpdate" xml:space="preserve">
+        <value>Choose settings you want to update</value>
+    </data>
 </root>

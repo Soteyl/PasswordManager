@@ -1,6 +1,6 @@
 using Telegram.Bot.Types;
 
-namespace PasswordManager.TelegramClient.Telegram;
+namespace PasswordManager.TelegramClient.Messenger;
 
 public interface IMessengerClient
 {
