@@ -200,5 +200,11 @@ namespace PasswordManager.TelegramClient.Resources {
                 return ResourceManager.GetString("MasterPasswordChanged", resourceCulture);
             }
         }
+        
+        internal static string ChooseSettingsToUpdate {
+            get {
+                return ResourceManager.GetString("ChooseSettingsToUpdate", resourceCulture);
+            }
+        }
     }
 }

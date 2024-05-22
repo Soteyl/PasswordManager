@@ -10,10 +10,10 @@ public class SettingsFormRegistration: IFormRegistration
     {
         return new FormBuilder()
                .AddStep(s => s.Builder
-                              .WithQuestion(MessageButtons.Settings) // todo
-                              .WithAnswerRow(MessageButtons.ChangeLanguage)
+                              .WithQuestion(MessageBodies.ChooseSettingsToUpdate)
+                              .WithAnswerRow(MessageButtons.ChangeMasterPassword)
                               .WithAnswerRow(MessageButtons.Return)
-                              .ExecuteAnotherForm<ChangeMasterPasswordFormRegistration>(MessageButtons.ChangeLanguage))
+                              .ExecuteAnotherForm<ChangeMasterPasswordFormRegistration>(MessageButtons.ChangeMasterPassword))
                .Build();
     }
 }

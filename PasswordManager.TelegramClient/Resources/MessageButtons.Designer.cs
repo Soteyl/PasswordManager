@@ -104,5 +104,11 @@ namespace PasswordManager.TelegramClient.Resources {
                 return ResourceManager.GetString("Settings", resourceCulture);
             }
         }
+        
+        internal static string ChangeMasterPassword {
+            get {
+                return ResourceManager.GetString("ChangeMasterPassword", resourceCulture);
+            }
+        }
     }
 }

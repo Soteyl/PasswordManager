@@ -45,6 +45,7 @@ public class TelegramFormMessageHandler
 
     public async Task StartFormRequestAsync(Type formType, long userId, long chatId, CancellationToken cancellationToken = default)
     {
+        await FinishCurrentFormAsync(userId, cancellationToken);
         
         var formEntity = new TelegramUserRequestFormEntity()
         {
@@ -113,13 +114,13 @@ public class TelegramFormMessageHandler
                 Client = client,
                 ChatId = message.Chat.Id
             }, cancellationToken);
-            _context.RequestForms.Remove(formEntity);
+            await FinishCurrentFormAsync(message.From.Id, cancellationToken);
         }
         else
         {
             await WriteQuestionAsync(client, message.Chat.Id, formEntity, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
-        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task FinishCurrentFormAsync(long telegramUserId, CancellationToken cancellationToken = default)
