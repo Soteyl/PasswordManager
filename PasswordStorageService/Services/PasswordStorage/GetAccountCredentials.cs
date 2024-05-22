@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using PasswordManager;
@@ -24,7 +25,8 @@ public partial class PasswordStorageController
         return new GetAccountCredentialsResult()
         {
             Response = ServiceResponses.Success,
-            CredentialsHash = entity.CredentialsHash
+            CredentialsHash = ByteString.CopyFrom(entity.CredentialsHash),
+            CredentialsSalt = ByteString.CopyFrom(entity.CredentialsSalt)
         };
     }
     
