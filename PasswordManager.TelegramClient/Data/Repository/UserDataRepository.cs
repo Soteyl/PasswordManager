@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using PasswordManager.TelegramClient.Cryptography;
+using PasswordManager.TelegramClient.Common.Cryptography;
 using PasswordManager.TelegramClient.Data.Entities;
 using PasswordManager.TelegramClient.Resources;
 

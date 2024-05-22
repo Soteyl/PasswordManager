@@ -1,4 +1,6 @@
-﻿namespace PasswordManager.TelegramClient.Form;
+﻿using PasswordManager.TelegramClient.Form.Contracts;
+
+namespace PasswordManager.TelegramClient.Form;
 
 public class FormBuilder
 {

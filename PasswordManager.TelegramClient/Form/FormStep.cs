@@ -1,6 +1,6 @@
-﻿using PasswordManager.TelegramClient.Commands;
-using PasswordManager.TelegramClient.Commands.Handler;
-using PasswordManager.TelegramClient.Data.Entities;
+﻿using PasswordManager.TelegramClient.Data.Entities;
+using PasswordManager.TelegramClient.Form.Contracts;
+using PasswordManager.TelegramClient.FormRegistrations.Handler;
 
 namespace PasswordManager.TelegramClient.Form;
 
