@@ -12,7 +12,7 @@ public class MainMenuMessageCommand(IUserDataRepository userDataRepository, Tele
     protected override async Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request, CancellationToken cancellationToken = default)
     {
         await request.Client.SendMessageAsync(MessageBodies.WrongMessageWarningBody, request.Message.Chat.Id, 
-            new KeyboardBuilder().AddRow(MessageButtons.ShowMyAccounts).Build(), cancellationToken: cancellationToken);
+            new KeyboardBuilder().AddRow(MessageButtons.ShowMyAccounts).AddRow(MessageButtons.Settings).Build(), cancellationToken: cancellationToken);
 
         return new ExecuteTelegramCommandResult();
     }

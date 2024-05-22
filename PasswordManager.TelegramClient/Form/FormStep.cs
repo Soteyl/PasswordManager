@@ -1,4 +1,5 @@
 ﻿using PasswordManager.TelegramClient.Commands;
+using PasswordManager.TelegramClient.Commands.Handler;
 using PasswordManager.TelegramClient.Data.Entities;
 
 namespace PasswordManager.TelegramClient.Form;
@@ -8,6 +9,8 @@ public class FormStep
     private readonly BuildFormStepDelegate _buildFunc;
     
     private readonly List<List<string>> _answers = new();
+    
+    private readonly Dictionary<string, Type> _nextForms = new();
 
     public string Question { get; set; }
 
@@ -19,11 +22,11 @@ public class FormStep
 
     public bool IsDeleteQuestionAfterAnswer { get; private set; }
 
-    public bool IsWithoutAnswer { get; private set; }
-
     public string AnswerKey { get; private set; }
 
     public ValidateFormDelegate? Validator { get; private set; }
+
+    public IReadOnlyDictionary<string, Type> NextForms => _nextForms;
 
     public FormStep(BuildFormStepDelegate buildFunc)
     {
@@ -62,13 +65,6 @@ public class FormStep
         return this;
     }
 
-    public FormStep WithoutAnswer()
-    {
-        IsWithoutAnswer = true;
-
-        return this;
-    }
-
     public FormStep DeleteAnswerMessage()
     {
         IsDeleteAnswer = true;
@@ -94,6 +90,14 @@ public class FormStep
     {
         Validator = validator;
 
+        return this;
+    }
+
+    public FormStep ExecuteAnotherForm<TForm>(string? answerCondition = null)
+        where TForm : IFormRegistration
+    {
+        answerCondition ??= string.Empty;
+        _nextForms.Add(answerCondition, typeof(TForm));
         return this;
     }
 

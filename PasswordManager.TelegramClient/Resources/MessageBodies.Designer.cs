@@ -176,5 +176,29 @@ namespace PasswordManager.TelegramClient.Resources {
                 return ResourceManager.GetString("AccountDeleted", resourceCulture);
             }
         }
+        
+        internal static string ChangeMasterPasswordConditions {
+            get {
+                return ResourceManager.GetString("ChangeMasterPasswordConditions", resourceCulture);
+            }
+        }
+        
+        internal static string WrongLinesCount {
+            get {
+                return ResourceManager.GetString("WrongLinesCount", resourceCulture);
+            }
+        }
+        
+        internal static string NewMasterPasswordNotMatch {
+            get {
+                return ResourceManager.GetString("NewMasterPasswordNotMatch", resourceCulture);
+            }
+        }
+        
+        internal static string MasterPasswordChanged {
+            get {
+                return ResourceManager.GetString("MasterPasswordChanged", resourceCulture);
+            }
+        }
     }
 }

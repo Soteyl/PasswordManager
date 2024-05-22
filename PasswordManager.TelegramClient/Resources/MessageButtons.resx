@@ -42,4 +42,10 @@
     <data name="GetAccountCredentials" xml:space="preserve">
         <value>Get account credentials</value>
     </data>
+    <data name="ChangeLanguage" xml:space="preserve">
+        <value>Change language</value>
+    </data>
+    <data name="Settings" xml:space="preserve">
+        <value>Settings</value>
+    </data>
 </root>

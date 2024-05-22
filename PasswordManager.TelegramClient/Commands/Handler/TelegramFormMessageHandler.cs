@@ -4,10 +4,7 @@ using PasswordManager.TelegramClient.Data.Entities;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Form;
 using PasswordManager.TelegramClient.Telegram;
-using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.TelegramClient.Commands.Handler;
 
@@ -43,11 +40,16 @@ public class TelegramFormMessageHandler
     public async Task StartFormRequestAsync<TForm>(long userId, long chatId, CancellationToken cancellationToken = default)
         where TForm: IFormRegistration
     {
-        var formType = typeof(TForm).FullName!;
+        await StartFormRequestAsync(typeof(TForm), userId, chatId, cancellationToken);
+    }
+
+    public async Task StartFormRequestAsync(Type formType, long userId, long chatId, CancellationToken cancellationToken = default)
+    {
+        
         var formEntity = new TelegramUserRequestFormEntity()
         {
             UserId = userId,
-            FormType = formType,
+            FormType = formType.FullName!,
             CurrentStep = 0
         };
         await _context.RequestForms.AddAsync(formEntity, cancellationToken);
@@ -78,25 +80,28 @@ public class TelegramFormMessageHandler
         var currentForm = _formModels[formEntity.FormType];
         var currentStep = await currentForm.Steps.ElementAt(formEntity.CurrentStep).BuildAsync(userData, formEntity.Data!, cancellationToken);
 
-        if (!currentStep.IsWithoutAnswer)
+        if (currentStep.NextForms.TryGetValue(message.Text!, out var nextForm))
         {
-            if (currentStep.IsDeleteAnswer) 
-                await client.DeleteMessageAsync(message.MessageId, message.Chat.Id, cancellationToken: cancellationToken);
-            var validateResult = currentStep.Validator?.Invoke(new ValidateAnswerEventArgs()
-            {
-                Answer = message.Text!,
-                UserData = userData,
-                Context = formEntity.Data
-            }, cancellationToken);
-            if (validateResult is { IsSuccess: false })
-            {
-                await client.SendMessageAsync(validateResult.Error!, message.Chat.Id,
-                    cancellationToken: cancellationToken);
-                return;
-            }
-            formEntity.Data ??= new();
-            formEntity.Data.Add(currentStep.AnswerKey, validateResult?.ValidResult ?? message.Text!);
+            await StartFormRequestAsync(nextForm, message.From.Id, message.Chat.Id, cancellationToken);
+            return;
         }
+        
+        if (currentStep.IsDeleteAnswer) 
+            await client.DeleteMessageAsync(message.MessageId, message.Chat.Id, cancellationToken: cancellationToken);
+        var validateResult = currentStep.Validator?.Invoke(new ValidateAnswerEventArgs()
+        {
+            Answer = message.Text!,
+            UserData = userData,
+            Context = formEntity.Data
+        }, cancellationToken);
+        if (validateResult is { IsSuccess: false })
+        {
+            await client.SendMessageAsync(validateResult.Error!, message.Chat.Id,
+                cancellationToken: cancellationToken);
+            return;
+        }
+        formEntity.Data ??= new();
+        formEntity.Data.Add(currentStep.AnswerKey, validateResult?.ValidResult ?? message.Text!);
         
         formEntity.CurrentStep++;
         if (formEntity.CurrentStep >= currentForm.Steps.Count)
