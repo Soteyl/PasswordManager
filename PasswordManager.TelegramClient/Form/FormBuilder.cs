@@ -4,6 +4,13 @@ public class FormBuilder
 {
     private List<FormStep> _steps = new();
     private OnCompleteDelegate _onComplete;
+    private List<string> _commands = new();
+
+    public FormBuilder RegisterCommands(params string[] commands)
+    {
+        _commands.AddRange(commands);
+        return this;
+    }
 
     public FormBuilder AddStep(BuildFormStepDelegate step)
     {
@@ -19,6 +26,6 @@ public class FormBuilder
 
     public FormModel Build()
     {
-        return new FormModel(_steps, _onComplete);
+        return new FormModel(_steps, _onComplete, _commands);
     }
 }

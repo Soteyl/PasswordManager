@@ -1,4 +1,6 @@
-﻿using PasswordManager.TelegramClient.Resources;
+﻿using PasswordManager.TelegramClient.Commands.SetUpMasterPassword;
+using PasswordManager.TelegramClient.Data.Repository;
+using PasswordManager.TelegramClient.Resources;
 using PasswordManager.TelegramClient.Telegram;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -6,31 +8,37 @@ using Telegram.Bot.Types;
 
 namespace PasswordManager.TelegramClient.Commands.Handler;
 
-public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessageHandler, 
-    ITelegramCommandResolver commandResolver, IMessengerClient client): IUpdateHandler
+public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessageHandler, IMessengerClient client, 
+    IUserDataRepository userDataRepository): IUpdateHandler
 {
-    private ITelegramCommand _wrongMessageCommand;
-    
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         if (update.Message is null) return;
-        if (update.Message.Text == MessageButtons.Cancel || update.Message.Text == MessageButtons.Return)
+        var form = await formMessageHandler.GetFormByMessageAsync(update.Message, cancellationToken);
+        
+        if (form == typeof(CancelFormRegistration))
         {
-            (await commandResolver.ResolveCommandAsync<CancelMessageCommand>(cancellationToken))
-                .ExecuteAsync(update.Message, client, cancellationToken);
+            _ = formMessageHandler.StartFormRequestAsync<CancelFormRegistration>(update.Message.From!.Id, 
+                update.Message.Chat.Id, cancellationToken);
             return;
         }
 
-        var hasActiveForm = await formMessageHandler.HasActiveFormAsync(update.Message.From!.Id, cancellationToken);
-        if (hasActiveForm)
+        var hasActiveForm = await formMessageHandler.GetActiveFormAsync(update.Message.From!.Id, cancellationToken);
+        if (hasActiveForm != typeof(SetUpMasterPasswordFormRegistration) 
+            && await userDataRepository.GetUserDataAsync(update.Message.From!.Id, cancellationToken) 
+            is { MasterPasswordHash: null })
+        {
+            _ = formMessageHandler.StartFormRequestAsync<SetUpMasterPasswordFormRegistration>(update.Message.From!.Id, 
+                update.Message.Chat.Id, cancellationToken);
+        }
+        
+        if (hasActiveForm is not null)
         {
             _ = formMessageHandler.HandleFormRequestAsync(client, update.Message, cancellationToken);
             return;
         }
-        
-        var command = await commandResolver.ResolveCommandByMessageAsync(update.Message, cancellationToken);
-        
-        _ = command.ExecuteAsync(update.Message, client, cancellationToken);
+
+        await formMessageHandler.StartFormRequestAsync(form, update.Message.From.Id, update.Message.Chat.Id, cancellationToken);
     }
 
     public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)

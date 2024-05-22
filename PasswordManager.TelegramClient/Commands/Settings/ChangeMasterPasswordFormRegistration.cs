@@ -17,6 +17,7 @@ public class ChangeMasterPasswordFormRegistration(IUserDataRepository userDataRe
     public FormModel ResolveForm()
     {
         return new FormBuilder()
+               .RegisterCommands(MessageButtons.ChangeMasterPassword)
                .AddStep(s => s.Builder
                               .WithQuestion(MessageBodies.ChangeMasterPasswordConditions)
                               .WithAnswerRow(MessageButtons.Cancel)

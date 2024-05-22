@@ -1,4 +1,5 @@
-﻿using PasswordManager.TelegramClient.Data.Entities;
+﻿using PasswordManager.TelegramClient.Commands.Handler;
+using PasswordManager.TelegramClient.Data.Entities;
 using PasswordManager.TelegramClient.Telegram;
 using Telegram.Bot;
 
@@ -13,4 +14,6 @@ public class OnCompleteFormEventArgs
     public Dictionary<string, string> Answers { get; set; }
     
     public IMessengerClient Client { get; set; }
+    
+    public TelegramFormMessageHandler FormMessageHandler { get; set; }
 }

@@ -9,6 +9,7 @@ public class SettingsFormRegistration: IFormRegistration
     public FormModel ResolveForm()
     {
         return new FormBuilder()
+               .RegisterCommands(MessageButtons.Settings)
                .AddStep(s => s.Builder
                               .WithQuestion(MessageBodies.ChooseSettingsToUpdate)
                               .WithAnswerRow(MessageButtons.ChangeMasterPassword)

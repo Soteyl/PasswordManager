@@ -29,6 +29,7 @@ builder.Services.AddGrpcClient<PasswordStorageService.PasswordStorageServiceClie
     o.Address = new Uri(config.GetRequiredSection("PasswordStorageService").Value!));
 builder.Services.AddSingleton<IUserDataRepository, UserDataRepository>();
 builder.Services.AddDbContext<TelegramClientContext>(o => o.UseNpgsql(config.GetConnectionString("postgresUserData")!));
+builder.Services.AddDbContextFactory<TelegramClientContext>();
 builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(config.GetConnectionString("telegramBot")!));
 builder.Services.AddSingleton<IMessengerClient, TelegramMessengerClient>();
 
@@ -36,7 +37,6 @@ builder.Services.AddAllFormRegistrations(Assembly.GetExecutingAssembly());
 builder.Services.AddSingleton<TelegramFormMessageHandler>();
     
 builder.Services.AddSingleton<IUpdateHandler, TelegramMessageCommandHandler>();
-builder.Services.AddSingleton<ITelegramCommandResolver, TelegramMessageCommandResolver>();
 builder.Services.AddHostedService<TelegramUpdatesReceiver>();
 
 var app = builder.Build();

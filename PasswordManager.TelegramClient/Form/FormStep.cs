@@ -12,7 +12,7 @@ public class FormStep
     
     private readonly Dictionary<string, Type> _nextForms = new();
 
-    public string Question { get; set; }
+    public string? Question { get; set; }
 
     public IEnumerable<IEnumerable<string>>? Answers => _answers;
 
@@ -21,6 +21,8 @@ public class FormStep
     public TimeSpan? TimeBeforeQuestionDeletion { get; private set; }
 
     public bool IsDeleteQuestionAfterAnswer { get; private set; }
+    
+    public bool IsDisableWebPagePreview { get; private set; }
 
     public string AnswerKey { get; private set; }
 
@@ -72,6 +74,13 @@ public class FormStep
         return this;
     }
 
+    public FormStep DisableWebPagePreview()
+    {
+        IsDisableWebPagePreview = true;
+
+        return this;
+    }
+
     public FormStep DeleteQuestionAfter(TimeSpan timeSpan)
     {
         TimeBeforeQuestionDeletion = timeSpan;
@@ -101,14 +110,16 @@ public class FormStep
         return this;
     }
 
-    public async Task<FormStep> BuildAsync(TelegramUserDataEntity user, Dictionary<string, string> data,
+    public async Task<FormStep> BuildAsync(TelegramUserDataEntity user, Dictionary<string, string> data, 
+        TelegramFormMessageHandler formMessageHandler,
         CancellationToken cancellationToken = default)
     {
         return _buildFunc(new BuildFormStepEventArgs()
         {
             UserData = user,
             Data = data,
-            Builder = new FormStep()
+            Builder = new FormStep(),
+            FormMessageHandler = formMessageHandler
         });
     }
 }

@@ -14,13 +14,8 @@ public partial class TelegramMessengerClient(ITelegramBotClient client): IMessen
         bool disableWebPagePreview = false,
         CancellationToken cancellationToken = default)
     {
-        answers = answers?.ToList();
-        IReplyMarkup markup = answers is not null && answers.Any() 
-            ? new ReplyKeyboardMarkup(answers.Select(x => x.Select(y => new KeyboardButton(y)))) 
-            : new ReplyKeyboardRemove();
-
         return await client.SendTextMessageAsync(chatId, message, 
-            replyMarkup: markup, 
+            replyMarkup: GetMarkup(answers), 
             parseMode: ParseMode.Markdown,
             disableWebPagePreview: disableWebPagePreview,
             cancellationToken: cancellationToken);
@@ -29,5 +24,16 @@ public partial class TelegramMessengerClient(ITelegramBotClient client): IMessen
     public async Task DeleteMessageAsync(int messageId, long chatId, CancellationToken cancellationToken = default)
     {
         await client.DeleteMessageAsync(chatId, messageId, cancellationToken);
+    }
+    
+    private IReplyMarkup GetMarkup(IEnumerable<IEnumerable<string>>? answers)
+    {
+        answers = answers?.ToList();
+        return answers is not null && answers.Any() 
+            ? new ReplyKeyboardMarkup(answers.Select(x => x.Select(y => new KeyboardButton(y))))
+            {
+                ResizeKeyboard = true
+            }
+            : new ReplyKeyboardRemove();
     }
 }
