@@ -11,8 +11,17 @@ public class Cancel: IFormRegistration
         return new FormBuilder()
                .RegisterCommands(MessageButtons.Cancel, MessageButtons.Return)
                .OnComplete(async (args, ct)
-                   => await args.FormMessageHandler.StartFormRequestAsync<MainMenu>(args.UserData.TelegramUserId,
-                       args.ChatId, ct))
+                   =>
+               {
+                   if (args.UserData.MasterPasswordHash is null)
+                   {
+                       await args.FormMessageHandler.StartFormRequestAsync<SetUpMasterPassword>(args.UserData.TelegramUserId,
+                           args.ChatId, ct);
+                       return;
+                   }
+                   await args.FormMessageHandler.StartFormRequestAsync<MainMenu>(args.UserData.TelegramUserId,
+                       args.ChatId, ct);
+               })
                .Build();
     }
 }

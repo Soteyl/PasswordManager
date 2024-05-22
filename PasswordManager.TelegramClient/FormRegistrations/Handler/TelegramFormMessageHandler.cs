@@ -46,7 +46,7 @@ public class TelegramFormMessageHandler
     public async Task<Type?> GetActiveFormAsync(long telegramUserId, CancellationToken cancellationToken = default)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-        return (await GetOneAsync(telegramUserId, context, true, cancellationToken))?.GetType();
+        return Type.GetType((await GetOneAsync(telegramUserId, context, true, cancellationToken))?.FormType ?? string.Empty);
     }
     
     public async Task StartFormRequestAsync<TForm>(long userId, long chatId, CancellationToken cancellationToken = default)
@@ -99,7 +99,7 @@ public class TelegramFormMessageHandler
             var currentStep = await currentForm.Steps.ElementAt(formEntity.CurrentStep)
                                                .BuildAsync(userData, formEntity.Data!, this, cancellationToken);
 
-            if (currentStep.NextForms.TryGetValue(message.Text!, out var nextForm))
+            if (currentStep.NextForms.TryGetValue(message.Text ?? string.Empty, out var nextForm))
             {
                 await StartFormRequestAsync(nextForm, message.From.Id, message.Chat.Id, cancellationToken);
 

@@ -13,6 +13,16 @@ public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessag
     {
         if (update.Message is null) return;
         var form = await formMessageHandler.GetFormByMessageAsync(update.Message, cancellationToken);
+
+        var activeForm = await formMessageHandler.GetActiveFormAsync(update.Message.From!.Id, cancellationToken);
+        if (activeForm != typeof(SetUpMasterPassword) 
+            && await userDataRepository.GetUserDataAsync(update.Message.From!.Id, cancellationToken)
+                is { MasterPasswordHash: null })
+        {
+            _ = formMessageHandler.StartFormRequestAsync<SetUpMasterPassword>(update.Message.From!.Id, 
+                update.Message.Chat.Id, cancellationToken);
+            return;
+        }
         
         if (form == typeof(Cancel))
         {
@@ -20,17 +30,8 @@ public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessag
                 update.Message.Chat.Id, cancellationToken);
             return;
         }
-
-        var hasActiveForm = await formMessageHandler.GetActiveFormAsync(update.Message.From!.Id, cancellationToken);
-        if (hasActiveForm != typeof(SetUpMasterPassword) 
-            && await userDataRepository.GetUserDataAsync(update.Message.From!.Id, cancellationToken) 
-            is { MasterPasswordHash: null })
-        {
-            _ = formMessageHandler.StartFormRequestAsync<SetUpMasterPassword>(update.Message.From!.Id, 
-                update.Message.Chat.Id, cancellationToken);
-        }
         
-        if (hasActiveForm is not null)
+        if (activeForm is not null)
         {
             _ = formMessageHandler.HandleFormRequestAsync(client, update.Message, cancellationToken);
             return;
