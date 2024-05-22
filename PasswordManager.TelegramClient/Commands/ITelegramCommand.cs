@@ -1,4 +1,5 @@
 ﻿using PasswordManager.TelegramClient.Commands.Contracts;
+using PasswordManager.TelegramClient.Telegram;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -8,5 +9,5 @@ public interface ITelegramCommand
 {
     Task<bool> IsMatchAsync(Message message, CancellationToken cancellationToken = default);
     
-    Task<ExecuteTelegramCommandResult?> ExecuteAsync(Message message, ITelegramBotClient client, CancellationToken cancellationToken = default);
+    Task<ExecuteTelegramCommandResult?> ExecuteAsync(Message message, IMessengerClient client, CancellationToken cancellationToken = default);
 }

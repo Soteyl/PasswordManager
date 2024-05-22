@@ -6,11 +6,11 @@ namespace PasswordManager.TelegramClient.Background;
 
 public class TelegramUpdatesReceiver: BackgroundService
 {
-    private readonly TelegramBotClient _client;
+    private readonly ITelegramBotClient _client;
     
     private readonly IUpdateHandler _updateHandler;
 
-    public TelegramUpdatesReceiver(TelegramBotClient client, IUpdateHandler updateHandler)
+    public TelegramUpdatesReceiver(ITelegramBotClient client, IUpdateHandler updateHandler)
     {
         _client = client;
         _updateHandler = updateHandler;

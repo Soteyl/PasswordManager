@@ -12,7 +12,7 @@ public class GetAccountCredentialsMessageCommand(IUserDataRepository userDataRep
 
     protected override async Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request, CancellationToken cancellationToken = default)
     {
-        await formHandler.StartFormRequestAsync<GetAccountCredentialsFormRegistration>(request.Client, request.UserData.TelegramUserId, request.Message.Chat.Id, cancellationToken);
+        await formHandler.StartFormRequestAsync<GetAccountCredentialsFormRegistration>(request.UserData.TelegramUserId, request.Message.Chat.Id, cancellationToken);
         
         return new ExecuteTelegramCommandResult();
     }

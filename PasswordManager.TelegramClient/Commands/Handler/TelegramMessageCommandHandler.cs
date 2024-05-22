@@ -1,4 +1,5 @@
 ﻿using PasswordManager.TelegramClient.Resources;
+using PasswordManager.TelegramClient.Telegram;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -6,7 +7,7 @@ using Telegram.Bot.Types;
 namespace PasswordManager.TelegramClient.Commands.Handler;
 
 public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessageHandler, 
-    ITelegramCommandResolver commandResolver): IUpdateHandler
+    ITelegramCommandResolver commandResolver, IMessengerClient client): IUpdateHandler
 {
     private ITelegramCommand _wrongMessageCommand;
     
@@ -16,20 +17,20 @@ public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessag
         if (update.Message.Text == MessageButtons.Cancel || update.Message.Text == MessageButtons.Return)
         {
             (await commandResolver.ResolveCommandAsync<CancelMessageCommand>(cancellationToken))
-                .ExecuteAsync(update.Message, botClient, cancellationToken);
+                .ExecuteAsync(update.Message, client, cancellationToken);
             return;
         }
 
         var hasActiveForm = await formMessageHandler.HasActiveFormAsync(update.Message.From!.Id, cancellationToken);
         if (hasActiveForm)
         {
-            _ = formMessageHandler.HandleFormRequestAsync(botClient, update.Message, cancellationToken);
+            _ = formMessageHandler.HandleFormRequestAsync(client, update.Message, cancellationToken);
             return;
         }
         
         var command = await commandResolver.ResolveCommandByMessageAsync(update.Message, cancellationToken);
         
-        _ = command.ExecuteAsync(update.Message, botClient, cancellationToken);
+        _ = command.ExecuteAsync(update.Message, client, cancellationToken);
     }
 
     public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)

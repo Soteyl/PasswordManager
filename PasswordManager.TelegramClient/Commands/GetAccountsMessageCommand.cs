@@ -40,9 +40,8 @@ public class GetAccountsMessageCommand(IUserDataRepository userDataRepository,
             messageButtons[0].Add(MessageButtons.DeleteAccount);
         }
         
-        await request.Client.SendTextMessageAsync(request.Message.Chat.Id, message, 
-            replyMarkup: GetMarkup(messageButtons), disableWebPagePreview: true,
-            parseMode: ParseMode.MarkdownV2, cancellationToken: cancellationToken);
+        await request.Client.SendMessageAsync(message, request.Message.Chat.Id,
+            messageButtons, disableWebPagePreview: true, cancellationToken: cancellationToken);
         return new ExecuteTelegramCommandResult();
     }
 }

@@ -1,8 +1,8 @@
 ﻿using PasswordManager.TelegramClient.Commands.Contracts;
 using PasswordManager.TelegramClient.Commands.Handler;
 using PasswordManager.TelegramClient.Data.Repository;
+using PasswordManager.TelegramClient.Keyboard;
 using PasswordManager.TelegramClient.Resources;
-using Telegram.Bot;
 
 namespace PasswordManager.TelegramClient.Commands;
 
@@ -11,8 +11,8 @@ public class MainMenuMessageCommand(IUserDataRepository userDataRepository, Tele
 {
     protected override async Task<ExecuteTelegramCommandResult> ExecuteCommandAsync(ExecuteTelegramCommandRequest request, CancellationToken cancellationToken = default)
     {
-        await request.Client.SendTextMessageAsync(request.Message.Chat.Id, Resources.MessageBodies.WrongMessageWarningBody, 
-            replyMarkup: GetMarkup(MessageButtons.ShowMyAccounts), cancellationToken: cancellationToken);
+        await request.Client.SendMessageAsync(MessageBodies.WrongMessageWarningBody, request.Message.Chat.Id, 
+            new KeyboardBuilder().AddRow(MessageButtons.ShowMyAccounts).Build(), cancellationToken: cancellationToken);
 
         return new ExecuteTelegramCommandResult();
     }

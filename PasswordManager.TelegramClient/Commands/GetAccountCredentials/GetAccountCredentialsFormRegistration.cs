@@ -6,6 +6,7 @@ using PasswordManager.TelegramClient.Keyboard;
 using PasswordManager.TelegramClient.Resources;
 using PasswordManager.TelegramClient.Validation;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 
 namespace PasswordManager.TelegramClient.Commands.GetAccountCredentials;
 
@@ -55,8 +56,8 @@ public class GetAccountCredentialsFormRegistration(PasswordStorageService.Passwo
 
     private async Task OnComplete(OnCompleteFormEventArgs eventArgs, CancellationToken cancellationToken)
     {
-        var account = JsonConvert.DeserializeObject<AccountInfo>(eventArgs.Answers[Account])!;
-        var returnMarkup = KeyboardBuilder.GetMarkup(new KeyboardBuilder().Return().Build());
+        var account = JsonConvert.DeserializeObject<AccountInfo>(eventArgs.Answers[Account]);
+        var answers = new KeyboardBuilder().Return().Build();
         
         var creds = await passwordStorageService.GetAccountCredentialsAsync(new GetAccountCredentialsRequest()
         {
@@ -66,23 +67,22 @@ public class GetAccountCredentialsFormRegistration(PasswordStorageService.Passwo
 
         if (!creds.Response.IsSuccess)
         {
-            await eventArgs.Client.SendTextMessageAsync(eventArgs.ChatId, MessageBodies.InternalError, 
-                replyMarkup: returnMarkup, cancellationToken: cancellationToken);
+            await eventArgs.Client.SendMessageAsync(MessageBodies.InternalError, 
+                eventArgs.ChatId, answers: answers, cancellationToken: cancellationToken);
         }
 
         var decryptedPassword = Cryptographer.Decrypt(creds.CredentialsHash.ToByteArray(), 
             creds.CredentialsSalt.ToByteArray(), 
             eventArgs.Answers[MasterPassword]);
 
-        await eventArgs.Client.SendTextMessageAsync(eventArgs.ChatId, MessageBodies.HereIsYourPassword, 
-            cancellationToken: cancellationToken);
+        await eventArgs.Client.SendMessageAsync(MessageBodies.HereIsYourPassword, eventArgs.ChatId, cancellationToken: cancellationToken);
 
-        var passwordMessage = await eventArgs.Client.SendTextMessageAsync(eventArgs.ChatId, decryptedPassword,
-            replyMarkup: returnMarkup, cancellationToken: cancellationToken);
+        var passwordMessage = await eventArgs.Client.SendMessageAsync(decryptedPassword, eventArgs.ChatId,
+            answers: answers, cancellationToken: cancellationToken);
         
         await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
         
-        await eventArgs.Client.DeleteMessageAsync(eventArgs.ChatId, passwordMessage.MessageId,
+        await eventArgs.Client.DeleteMessageAsync(passwordMessage.MessageId, eventArgs.ChatId,
             cancellationToken: cancellationToken);
     }
 }

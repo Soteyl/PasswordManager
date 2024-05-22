@@ -7,13 +7,14 @@ using Microsoft.Extensions.Hosting;
 using PasswordManager;
 using PasswordManager.TelegramClient.Background;
 using PasswordManager.TelegramClient.Commands;
-using PasswordManager.TelegramClient.Commands.AddAccount;
 using PasswordManager.TelegramClient.Commands.Handler;
 using PasswordManager.TelegramClient.Data;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Extensions;
+using PasswordManager.TelegramClient.Telegram;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
+using TelegramMessengerClient = PasswordManager.TelegramClient.Messenger.TelegramMessengerClient;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -28,7 +29,8 @@ builder.Services.AddGrpcClient<PasswordStorageService.PasswordStorageServiceClie
     o.Address = new Uri(config.GetRequiredSection("PasswordStorageService").Value!));
 builder.Services.AddSingleton<IUserDataRepository, UserDataRepository>();
 builder.Services.AddDbContext<TelegramClientContext>(o => o.UseNpgsql(config.GetConnectionString("postgresUserData")!));
-builder.Services.AddSingleton(new TelegramBotClient(config.GetConnectionString("telegramBot")!));
+builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(config.GetConnectionString("telegramBot")!));
+builder.Services.AddSingleton<IMessengerClient, TelegramMessengerClient>();
 
 builder.Services.AddAllFormRegistrations(Assembly.GetExecutingAssembly());
 builder.Services.AddSingleton<TelegramFormMessageHandler>();

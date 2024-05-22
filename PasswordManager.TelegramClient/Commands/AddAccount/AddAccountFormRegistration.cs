@@ -6,6 +6,7 @@ using PasswordManager.TelegramClient.Keyboard;
 using PasswordManager.TelegramClient.Resources;
 using PasswordManager.TelegramClient.Validation;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 
 namespace PasswordManager.TelegramClient.Commands.AddAccount;
 
@@ -40,7 +41,8 @@ public class AddAccountFormRegistration(PasswordStorageService.PasswordStorageSe
                 .WithAnswers(cancelKeyboard)
                 .DeleteAnswerMessage())
             .AddStep(s => s.Builder
-                .WithQuestion(MessageBodies.AddAccountFinalStep)
+                .WithQuestion(MessageBodiesParametrized.AddAccountFinalStep(
+                    s.Data[WebsiteNickname], s.Data[Url], s.Data[Username], s.Data[Password]))
                 .WithAnswerKey(MasterPassword)
                 .ValidateAnswer(Validators.MasterPassword)
                 .DeleteQuestionAfterAnswer()
@@ -63,9 +65,10 @@ public class AddAccountFormRegistration(PasswordStorageService.PasswordStorageSe
             WebsiteNickname = eventArgs.Answers[WebsiteNickname]
         }, cancellationToken: cancellationToken);
         
-        await eventArgs.Client.SendTextMessageAsync(eventArgs.ChatId,
-            (response.Response.IsSuccess) ? MessageBodies.AddAccountSuccess : MessageBodies.InternalError, 
-            replyMarkup: KeyboardBuilder.GetMarkup(new KeyboardBuilder().Return().Build()), cancellationToken: cancellationToken);
+        await eventArgs.Client.SendMessageAsync(
+            (response.Response.IsSuccess) ? MessageBodies.AddAccountSuccess : MessageBodies.InternalError,
+            eventArgs.ChatId,
+            answers: new KeyboardBuilder().Return().Build(), cancellationToken: cancellationToken);
     }
     
     private static FormValidateResult IsValidUrl(ValidateAnswerEventArgs eventArgs, CancellationToken cancellationToken = default)

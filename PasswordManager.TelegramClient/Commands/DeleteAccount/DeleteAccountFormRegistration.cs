@@ -5,6 +5,7 @@ using PasswordManager.TelegramClient.Keyboard;
 using PasswordManager.TelegramClient.Resources;
 using PasswordManager.TelegramClient.Validation;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 
 namespace PasswordManager.TelegramClient.Commands.DeleteAccount;
 
@@ -69,7 +70,7 @@ public class DeleteAccountFormRegistration(PasswordStorageService.PasswordStorag
     private async Task OnComplete(OnCompleteFormEventArgs eventargs, CancellationToken cancellationtoken)
     {
         var account = JsonConvert.DeserializeObject<AccountInfo>(eventargs.Answers[Account])!;
-        var returnMarkup = KeyboardBuilder.GetMarkup(new KeyboardBuilder().Return().Build());
+        var returnMarkup = new KeyboardBuilder().Return().Build();
 
         var deleteAccountResponse = await passwordStorageService.DeleteAccountAsync(new DeleteAccountCommand()
         {
@@ -77,7 +78,7 @@ public class DeleteAccountFormRegistration(PasswordStorageService.PasswordStorag
             UserId = eventargs.UserData.InternalId.ToString()
         }, cancellationToken: cancellationtoken);
         
-        await eventargs.Client.SendTextMessageAsync(eventargs.ChatId, deleteAccountResponse.IsSuccess ? MessageBodies.AccountDeleted : MessageBodies.InternalError, 
-            replyMarkup: returnMarkup, cancellationToken: cancellationtoken);
+        await eventargs.Client.SendMessageAsync( deleteAccountResponse.IsSuccess ? MessageBodies.AccountDeleted : MessageBodies.InternalError,
+            eventargs.ChatId, answers: returnMarkup, cancellationToken: cancellationtoken);
     }
 }

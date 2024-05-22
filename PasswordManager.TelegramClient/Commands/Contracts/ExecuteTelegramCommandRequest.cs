@@ -1,4 +1,5 @@
 ﻿using PasswordManager.TelegramClient.Data.Entities;
+using PasswordManager.TelegramClient.Telegram;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -8,7 +9,7 @@ public class ExecuteTelegramCommandRequest
 {
     public Message Message { get; set; }
 
-    public ITelegramBotClient Client { get; set; }
+    public IMessengerClient Client { get; set; }
     
     public TelegramUserDataEntity UserData { get; set; }
 }

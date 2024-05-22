@@ -4,6 +4,7 @@ using PasswordManager.TelegramClient.Form;
 using PasswordManager.TelegramClient.Resources;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace PasswordManager.TelegramClient.Commands.SetUpMasterPassword;
 
@@ -27,7 +28,7 @@ public class SetUpMasterPasswordFormRegistration(
     {
         await userDataRepository.ChangeMasterPasswordAsync(args.ChatId, args.Answers[MasterPassword], cancellationToken);
         
-        await args.Client.SendTextMessageAsync(args.ChatId, MessageBodies.YourMasterPasswordIsApplied, cancellationToken: cancellationToken);
+        await args.Client.SendMessageAsync(MessageBodies.YourMasterPasswordIsApplied, args.ChatId, cancellationToken: cancellationToken);
 
         var mainMenu = await commandResolver.ResolveCommandAsync<MainMenuMessageCommand>(cancellationToken);
         await mainMenu.ExecuteAsync(new Message()

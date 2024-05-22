@@ -3,8 +3,10 @@ using PasswordManager.TelegramClient.Data;
 using PasswordManager.TelegramClient.Data.Entities;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Form;
+using PasswordManager.TelegramClient.Telegram;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace PasswordManager.TelegramClient.Commands.Handler;
@@ -14,13 +16,17 @@ public class TelegramFormMessageHandler
     private readonly TelegramClientContext _context;
     
     private readonly IUserDataRepository _userDataRepository;
+    
+    private readonly IMessengerClient _client;
 
     private readonly Dictionary<string, FormModel> _formModels = new();
 
-    public TelegramFormMessageHandler(TelegramClientContext context, IEnumerable<IFormRegistration> formRegistrations, IUserDataRepository userDataRepository)
+    public TelegramFormMessageHandler(TelegramClientContext context, IEnumerable<IFormRegistration> formRegistrations, 
+        IUserDataRepository userDataRepository, IMessengerClient client)
     {
         _context = context;
         _userDataRepository = userDataRepository;
+        _client = client;
 
         foreach (var formRegistration in formRegistrations)
         {
@@ -34,7 +40,7 @@ public class TelegramFormMessageHandler
         return await GetOneAsync(telegramUserId, true, cancellationToken) is not null;
     }
     
-    public async Task StartFormRequestAsync<TForm>(ITelegramBotClient client, long userId, long chatId, CancellationToken cancellationToken = default)
+    public async Task StartFormRequestAsync<TForm>(long userId, long chatId, CancellationToken cancellationToken = default)
         where TForm: IFormRegistration
     {
         var formType = typeof(TForm).FullName!;
@@ -48,8 +54,8 @@ public class TelegramFormMessageHandler
         await _context.SaveChangesAsync(cancellationToken);
         await _context.Entry(formEntity).Reference(x => x.User).LoadAsync(cancellationToken);
 
-        await WriteQuestionAsync(client, chatId, formEntity, cancellationToken);
-        await HandleFormRequestAsync(client, new Message()
+        await WriteQuestionAsync(_client, chatId, formEntity, cancellationToken);
+        await HandleFormRequestAsync(_client, new Message()
         {
             From = new User()
             {
@@ -62,7 +68,7 @@ public class TelegramFormMessageHandler
         }, cancellationToken);
     }
 
-    public async Task HandleFormRequestAsync(ITelegramBotClient client, Message message, CancellationToken cancellationToken = default)
+    public async Task HandleFormRequestAsync(IMessengerClient client, Message message, CancellationToken cancellationToken = default)
     {
         var formEntity = await GetOneAsync(message.From!.Id, false, cancellationToken);
         if (formEntity is null) return;
@@ -75,7 +81,7 @@ public class TelegramFormMessageHandler
         if (!currentStep.IsWithoutAnswer)
         {
             if (currentStep.IsDeleteAnswer) 
-                await client.DeleteMessageAsync(message.Chat.Id, message.MessageId, cancellationToken: cancellationToken);
+                await client.DeleteMessageAsync(message.MessageId, message.Chat.Id, cancellationToken: cancellationToken);
             var validateResult = currentStep.Validator?.Invoke(new ValidateAnswerEventArgs()
             {
                 Answer = message.Text!,
@@ -84,7 +90,8 @@ public class TelegramFormMessageHandler
             }, cancellationToken);
             if (validateResult is { IsSuccess: false })
             {
-                await client.SendTextMessageAsync(message.Chat.Id, validateResult.Error!, cancellationToken: cancellationToken);
+                await client.SendMessageAsync(validateResult.Error!, message.Chat.Id,
+                    cancellationToken: cancellationToken);
                 return;
             }
             formEntity.Data ??= new();
@@ -119,18 +126,12 @@ public class TelegramFormMessageHandler
         await _context.SaveChangesAsync(cancellationToken);
     }
     
-    private async Task WriteQuestionAsync(ITelegramBotClient client, long chatId, TelegramUserRequestFormEntity formEntity, CancellationToken cancellationToken = default)
+    private async Task WriteQuestionAsync(IMessengerClient client, long chatId, TelegramUserRequestFormEntity formEntity, CancellationToken cancellationToken = default)
     {
         var currentForm = _formModels[formEntity.FormType];
         var currentStep = await currentForm.Steps.ElementAt(formEntity.CurrentStep).BuildAsync(formEntity.User, formEntity.Data!, cancellationToken);
-        IReplyMarkup markup = new ReplyKeyboardRemove();
-        if (currentStep.Answers is not null && currentStep.Answers.Any())
-            markup = new ReplyKeyboardMarkup(currentStep.Answers.Select(x => x.Select(y => new KeyboardButton(y))))
-            {
-                ResizeKeyboard = true
-            };
-        var questionMessage = await client.SendTextMessageAsync(chatId, currentStep.Question, 
-            replyMarkup: markup, cancellationToken: cancellationToken);
+
+        var questionMessage = await client.SendMessageAsync(currentStep.Question, chatId, currentStep.Answers, cancellationToken: cancellationToken);
         if (currentStep.TimeBeforeQuestionDeletion.HasValue)
             _ = DeleteMessageAfterDelayAsync(client, chatId, questionMessage.MessageId,
                 currentStep.TimeBeforeQuestionDeletion.Value, cancellationToken: cancellationToken);
@@ -144,11 +145,11 @@ public class TelegramFormMessageHandler
             .FirstOrDefaultAsync(x => x.User.TelegramUserId.Equals(telegramUserId), cancellationToken);
     }
     
-    private async Task DeleteMessageAfterDelayAsync(ITelegramBotClient client, long chatId, int messageId, TimeSpan delay, 
+    private async Task DeleteMessageAfterDelayAsync(IMessengerClient client, long chatId, int messageId, TimeSpan delay, 
         CancellationToken cancellationToken = default)
     {
         await Task.Delay(delay, cancellationToken);
-        await client.DeleteMessageAsync(chatId, messageId, cancellationToken: cancellationToken);
+        await client.DeleteMessageAsync(messageId, chatId, cancellationToken: cancellationToken);
     }
 }
 

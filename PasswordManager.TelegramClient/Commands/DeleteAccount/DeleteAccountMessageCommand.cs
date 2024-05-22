@@ -11,7 +11,7 @@ public class DeleteAccountMessageCommand(IUserDataRepository userDataRepository,
 
     protected override async Task<ExecuteTelegramCommandResult?> ExecuteCommandAsync(ExecuteTelegramCommandRequest request, CancellationToken cancellationToken = default)
     {
-        await formHandler.StartFormRequestAsync<DeleteAccountFormRegistration>(request.Client, request.Message.From!.Id,
+        await formHandler.StartFormRequestAsync<DeleteAccountFormRegistration>(request.Message.From!.Id,
             request.Message.Chat.Id, cancellationToken);
 
         return new ExecuteTelegramCommandResult();

@@ -4,7 +4,7 @@ using PasswordManager.TelegramClient.Commands.Handler;
 using PasswordManager.TelegramClient.Commands.SetUpMasterPassword;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Resources;
-using Telegram.Bot;
+using PasswordManager.TelegramClient.Telegram;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -21,14 +21,14 @@ public abstract class MessageCommand(IUserDataRepository userDataRepository, Tel
         return Task.FromResult(Commands.Contains(message.Text!));
     }
 
-    public async Task<ExecuteTelegramCommandResult?> ExecuteAsync(Message message, ITelegramBotClient client, CancellationToken cancellationToken = default)
+    public async Task<ExecuteTelegramCommandResult?> ExecuteAsync(Message message, IMessengerClient client, CancellationToken cancellationToken = default)
     {
         var userData = await userDataRepository.GetUserDataAsync(message.From.Id, cancellationToken);
         CultureInfo.CurrentCulture = userData.Locale.ToCulture();
         
         if (MasterPasswordNeeded && string.IsNullOrEmpty(userData.MasterPasswordHash))
         {
-            await formHandler.StartFormRequestAsync<SetUpMasterPasswordFormRegistration>(client, message.From.Id, message.Chat.Id, cancellationToken);
+            await formHandler.StartFormRequestAsync<SetUpMasterPasswordFormRegistration>(message.From.Id, message.Chat.Id, cancellationToken);
 
             return new ExecuteTelegramCommandResult();
         }
