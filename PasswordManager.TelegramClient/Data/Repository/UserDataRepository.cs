@@ -37,7 +37,7 @@ public class UserDataRepository(TelegramClientContext context, IMemoryCache cach
     
     public async Task ChangeLocaleAsync(long telegramUserId, Locale locale, CancellationToken cancellationToken = default)
     {
-        var userData = await context.Users.AsNoTracking()
+        var userData = await context.Users
             .FirstAsync(x => x.TelegramUserId == telegramUserId, cancellationToken);
         
         userData.Locale = locale;
