@@ -14,10 +14,9 @@ public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessag
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         if (update.Message is null) return;
-        var form = await formMessageHandler.GetFormByMessageAsync(update.Message, cancellationToken);
         var user = await userDataRepository.GetUserDataAsync(update.Message.From!.Id, cancellationToken);
-
         CultureInfo.CurrentUICulture = user.Locale.ToCulture();
+        var form = await formMessageHandler.GetFormByMessageAsync(update.Message, cancellationToken);
 
         var activeForm = await formMessageHandler.GetActiveFormAsync(update.Message.From!.Id, cancellationToken);
         if (activeForm != typeof(SetUpMasterPassword) 

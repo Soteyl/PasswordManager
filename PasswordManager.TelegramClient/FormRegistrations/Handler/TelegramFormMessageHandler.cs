@@ -135,6 +135,7 @@ public class TelegramFormMessageHandler
 
         if (formEntity.CurrentStep >= currentForm.Steps.Count)
         {
+            await FinishCurrentFormAsync(message.From.Id, cancellationToken);
             await currentForm.OnComplete(new OnCompleteFormEventArgs()
             {
                 Answers = formEntity.Data,
@@ -143,7 +144,6 @@ public class TelegramFormMessageHandler
                 ChatId = message.Chat.Id,
                 FormMessageHandler = this
             }, cancellationToken);
-            await FinishCurrentFormAsync(message.From.Id, cancellationToken);
         }
         else
         {
