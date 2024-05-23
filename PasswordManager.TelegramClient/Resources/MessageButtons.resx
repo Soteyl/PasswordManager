@@ -1,9 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
-            
         </xsd:element>
     </xsd:schema>
     <resheader name="resmimetype">
@@ -19,36 +17,42 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="ShowMyAccounts" xml:space="preserve">
-        <value>Show my accounts</value>
+        <value>📄 My Accounts</value>
     </data>
     <data name="AddAccount" xml:space="preserve">
-        <value>Add an account</value>
+        <value>➕ Add Account</value>
     </data>
     <data name="ChangeAccount" xml:space="preserve">
-        <value>Change an account</value>
+        <value>🔄 Edit Account</value>
     </data>
     <data name="GetAccountPassword" xml:space="preserve">
-        <value>Get account password</value>
+        <value>🔑 Get Password</value>
     </data>
     <data name="DeleteAccount" xml:space="preserve">
-        <value>Delete an account information</value>
+        <value>🗑 Delete Account</value>
     </data>
     <data name="Cancel" xml:space="preserve">
-        <value>Cancel</value>
+        <value>❌ Cancel</value>
     </data>
     <data name="Return" xml:space="preserve">
-        <value>Return to menu</value>
+        <value>🔙 Return</value>
     </data>
     <data name="GetAccountCredentials" xml:space="preserve">
-        <value>Get account credentials</value>
+        <value>📋 Get Credentials</value>
     </data>
     <data name="ChangeLanguage" xml:space="preserve">
-        <value>Change language</value>
+        <value>🌐 Change Language</value>
     </data>
     <data name="Settings" xml:space="preserve">
-        <value>Settings</value>
+        <value>⚙️ Settings</value>
     </data>
     <data name="ChangeMasterPassword" xml:space="preserve">
-        <value>Change master password</value>
+        <value>🔐 Change Password</value>
     </data>
+    <data name="English" xml:space="preserve">
+    <value>🇬🇧 English</value>
+    </data>
+    <data name="Ukrainian" xml:space="preserve">
+    <value>🇺🇦 Українська</value>
+</data>
 </root>

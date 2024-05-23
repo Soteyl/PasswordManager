@@ -206,5 +206,23 @@ namespace PasswordManager.TelegramClient.Resources {
                 return ResourceManager.GetString("ChooseSettingsToUpdate", resourceCulture);
             }
         }
+        
+        internal static string LanguageSelection {
+            get {
+                return ResourceManager.GetString("LanguageSelection", resourceCulture);
+            }
+        }
+        
+        internal static string WrongLocaleChosen {
+            get {
+                return ResourceManager.GetString("WrongLocaleChosen", resourceCulture);
+            }
+        }
+        
+        internal static string ChooseOnlyButtonValue {
+            get {
+                return ResourceManager.GetString("ChooseOnlyButtonValue", resourceCulture);
+            }
+        }
     }
 }

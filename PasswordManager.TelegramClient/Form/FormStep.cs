@@ -1,6 +1,7 @@
 ﻿using PasswordManager.TelegramClient.Data.Entities;
 using PasswordManager.TelegramClient.Form.Contracts;
 using PasswordManager.TelegramClient.FormRegistrations.Handler;
+using PasswordManager.TelegramClient.Resources;
 
 namespace PasswordManager.TelegramClient.Form;
 
@@ -49,6 +50,26 @@ public class FormStep
     public FormStep WithAnswers(IEnumerable<IEnumerable<string>> answers)
     {
         _answers.AddRange(answers.Select(x => x.ToList()));
+
+        return this;
+    }
+
+    public FormStep OnlyButtonAnswer()
+    {
+        Validator = (args, token) =>
+        {
+            if (_answers.Any(x => x.Contains(args.Answer)))
+                return new FormValidateResult()
+                {
+                    IsSuccess = true
+                };
+
+            return new FormValidateResult()
+            {
+                IsSuccess = false,
+                Error = MessageBodies.ChooseOnlyButtonValue
+            };
+        };
 
         return this;
     }
