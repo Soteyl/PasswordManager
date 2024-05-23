@@ -20,7 +20,7 @@ public class UserDataRepository(TelegramClientContext context, IMemoryCache cach
         userData = await context.Users.AsNoTracking()
             .FirstOrDefaultAsync(x => x.TelegramUserId == telegramUserId, cancellationToken);
         
-        if (userData == null)
+        if (userData == null) 
         {
             userData = new TelegramUserDataEntity()
             {
