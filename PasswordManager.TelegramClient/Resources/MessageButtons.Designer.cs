@@ -110,5 +110,17 @@ namespace PasswordManager.TelegramClient.Resources {
                 return ResourceManager.GetString("ChangeMasterPassword", resourceCulture);
             }
         }
+        
+        internal static string English {
+            get {
+                return ResourceManager.GetString("English", resourceCulture);
+            }
+        }
+        
+        internal static string Ukrainian {
+            get {
+                return ResourceManager.GetString("Ukrainian", resourceCulture);
+            }
+        }
     }
 }

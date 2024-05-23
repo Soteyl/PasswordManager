@@ -19,4 +19,14 @@ public static class LocaleExtensions
             _ => new CultureInfo("en-US")
         };
     }
+
+    public static Locale? ToLocale(string language)
+    {
+        if (language == MessageButtons.English)
+            return Locale.English;
+        if (language == MessageButtons.Ukrainian)
+            return Locale.Ukrainian;
+
+        return null;
+    }
 }

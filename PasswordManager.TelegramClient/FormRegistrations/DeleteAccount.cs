@@ -39,6 +39,7 @@ public class DeleteAccount(PasswordStorageService.PasswordStorageServiceClient p
                         {
                             x
                         }))
+                        .OnlyButtonAnswer()
                         .ValidateAnswer((args, ct) => Validators.Account(args, passwordStorageService, ct))
                         .WithAnswerKey(Account);
             }).AddStep(s =>

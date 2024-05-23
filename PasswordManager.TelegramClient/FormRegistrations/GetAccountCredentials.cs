@@ -36,6 +36,7 @@ public class GetAccountCredentials(PasswordStorageService.PasswordStorageService
                 return s.Builder
                         .WithQuestion(message)
                         .WithAnswers(accountsMarkup.Select(x => new []{x}))
+                        .OnlyButtonAnswer()
                         .ValidateAnswer((args, ct) => Validators.Account(args, passwordStorageService, ct))
                         .WithAnswerKey(Account);
             })

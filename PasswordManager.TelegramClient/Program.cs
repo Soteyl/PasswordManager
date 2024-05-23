@@ -1,5 +1,8 @@
 ﻿
+using System.Globalization;
 using System.Reflection;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +25,8 @@ var config = builder.Configuration
     .AddJsonFile("secrets.json")
     .AddJsonFile("appsettings.json")
     .Build();
+
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 builder.Services.AddMemoryCache();
 builder.Services.AddGrpcClient<PasswordStorageService.PasswordStorageServiceClient>(o => 

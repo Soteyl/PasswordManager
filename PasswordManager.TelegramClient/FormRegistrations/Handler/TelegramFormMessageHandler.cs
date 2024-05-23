@@ -19,7 +19,7 @@ public class TelegramFormMessageHandler
     
     private readonly IMessengerClient _client;
 
-    private readonly Dictionary<string, FormModel> _formModels = new();
+    private readonly Dictionary<string, IFormRegistration> _formModels = new();
 
     public TelegramFormMessageHandler(IDbContextFactory<TelegramClientContext> contextFactory, IEnumerable<IFormRegistration> formRegistrations, 
         IUserDataRepository userDataRepository, IMessengerClient client)
@@ -30,15 +30,14 @@ public class TelegramFormMessageHandler
 
         foreach (var formRegistration in formRegistrations)
         {
-            var formModel = formRegistration.ResolveForm();
-            _formModels.Add(formRegistration.GetType().FullName!, formModel);
+            _formModels.Add(formRegistration.GetType().FullName!, formRegistration);
         }
     }
     
     public Task<Type> GetFormByMessageAsync(Message message, CancellationToken cancellationToken = default)
     {
         var formType = _defaultForm;
-        var form = _formModels.FirstOrDefault(x => x.Value.Commands.Contains(message.Text));
+        var form = _formModels.FirstOrDefault(x => x.Value.ResolveForm().Commands.Contains(message.Text));
         if (Type.GetType(form.Key ?? string.Empty) is not null and var type) formType = type;
         return Task.FromResult(formType);
     }
@@ -70,21 +69,24 @@ public class TelegramFormMessageHandler
         await context.SaveChangesAsync(cancellationToken);
         await context.Entry(formEntity).Reference(x => x.User).LoadAsync(cancellationToken);
 
-        await WriteQuestionAsync(_client, chatId, formEntity, cancellationToken);
-        await HandleFormRequestAsync(_client, new Message()
+        await WriteQuestionAsync(chatId, formEntity, cancellationToken);
+
+        var form = _formModels[formType.FullName!].ResolveForm();
+
+        if (form.Steps.Count == 0)
         {
-            From = new User()
+            await form.OnComplete(new OnCompleteFormEventArgs()
             {
-                Id = userId,
-            },
-            Chat = new Chat()
-            {
-                Id = chatId
-            }
-        }, cancellationToken);
+                Answers = formEntity.Data!,
+                UserData = formEntity.User,
+                Client = _client,
+                ChatId = chatId,
+                FormMessageHandler = this
+            }, cancellationToken);
+        }
     }
 
-    public async Task HandleFormRequestAsync(IMessengerClient client, Message message, CancellationToken cancellationToken = default)
+    public async Task HandleFormRequestAsync(Message message, CancellationToken cancellationToken = default)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         var formEntity = await GetOneAsync(message.From!.Id, context, false, cancellationToken);
@@ -92,7 +94,7 @@ public class TelegramFormMessageHandler
 
         var userData = await _userDataRepository.GetUserDataAsync(message.From.Id, cancellationToken);
         
-        var currentForm = _formModels[formEntity.FormType];
+        var currentForm = _formModels[formEntity.FormType].ResolveForm();
 
         if (currentForm.Steps.Count > formEntity.CurrentStep)
         {
@@ -107,7 +109,7 @@ public class TelegramFormMessageHandler
             }
 
             if (currentStep.IsDeleteAnswer)
-                await client.DeleteMessageAsync(message.MessageId, message.Chat.Id, cancellationToken: cancellationToken);
+                await _client.DeleteMessageAsync(message.MessageId, message.Chat.Id, cancellationToken: cancellationToken);
 
             var validateResult = currentStep.Validator?.Invoke(new ValidateAnswerEventArgs()
             {
@@ -118,8 +120,8 @@ public class TelegramFormMessageHandler
 
             if (validateResult is { IsSuccess: false })
             {
-                await client.SendMessageAsync(validateResult.Error!, message.Chat.Id,
-                    cancellationToken: cancellationToken);
+                await _client.SendMessageAsync(validateResult.Error!, message.Chat.Id,
+                    answers: currentStep.Answers, cancellationToken: cancellationToken);
 
                 return;
             }
@@ -137,7 +139,7 @@ public class TelegramFormMessageHandler
             {
                 Answers = formEntity.Data,
                 UserData = userData,
-                Client = client,
+                Client = _client,
                 ChatId = message.Chat.Id,
                 FormMessageHandler = this
             }, cancellationToken);
@@ -145,7 +147,7 @@ public class TelegramFormMessageHandler
         }
         else
         {
-            await WriteQuestionAsync(client, message.Chat.Id, formEntity, cancellationToken);
+            await WriteQuestionAsync(message.Chat.Id, formEntity, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
         }
     }
@@ -160,9 +162,9 @@ public class TelegramFormMessageHandler
         await context.SaveChangesAsync(cancellationToken);
     }
     
-    private async Task WriteQuestionAsync(IMessengerClient client, long chatId, TelegramUserRequestFormEntity formEntity, CancellationToken cancellationToken = default)
+    private async Task WriteQuestionAsync(long chatId, TelegramUserRequestFormEntity formEntity, CancellationToken cancellationToken = default)
     {
-        var currentForm = _formModels[formEntity.FormType];
+        var currentForm = _formModels[formEntity.FormType].ResolveForm();
         
         if (formEntity.CurrentStep >= currentForm.Steps.Count)
             return;
@@ -172,10 +174,10 @@ public class TelegramFormMessageHandler
         if (currentStep.Question is null)
             return;
 
-        var questionMessage = await client.SendMessageAsync(currentStep.Question, chatId, currentStep.Answers, 
+        var questionMessage = await _client.SendMessageAsync(currentStep.Question, chatId, currentStep.Answers, 
             disableWebPagePreview: currentStep.IsDisableWebPagePreview, cancellationToken: cancellationToken);
         if (currentStep.TimeBeforeQuestionDeletion.HasValue)
-            _ = DeleteMessageAfterDelayAsync(client, chatId, questionMessage.MessageId,
+            _ = DeleteMessageAfterDelayAsync(chatId, questionMessage.MessageId,
                 currentStep.TimeBeforeQuestionDeletion.Value, cancellationToken: cancellationToken);
     }
     
@@ -187,11 +189,11 @@ public class TelegramFormMessageHandler
             .FirstOrDefaultAsync(x => x.User.TelegramUserId.Equals(telegramUserId), cancellationToken);
     }
     
-    private async Task DeleteMessageAfterDelayAsync(IMessengerClient client, long chatId, int messageId, TimeSpan delay, 
+    private async Task DeleteMessageAfterDelayAsync(long chatId, int messageId, TimeSpan delay, 
         CancellationToken cancellationToken = default)
     {
         await Task.Delay(delay, cancellationToken);
-        await client.DeleteMessageAsync(messageId, chatId, cancellationToken: cancellationToken);
+        await _client.DeleteMessageAsync(messageId, chatId, cancellationToken: cancellationToken);
     }
 }
 

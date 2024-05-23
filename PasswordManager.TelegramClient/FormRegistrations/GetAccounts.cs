@@ -41,6 +41,7 @@ public class GetAccounts(PasswordStorageService.PasswordStorageServiceClient pas
                         .WithQuestion(message)
                         .DisableWebPagePreview()
                         .WithAnswers(messageButtons)
+                        .OnlyButtonAnswer()
                         .WithAnswerKey(Account)
                         .ExecuteAnotherForm<AddAccount>(MessageButtons.AddAccount)
                         .ExecuteAnotherForm<GetAccountCredentials>(MessageButtons.GetAccountCredentials)
