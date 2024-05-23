@@ -13,8 +13,10 @@ public class Settings: IFormRegistration
                .AddStep(s => s.Builder
                               .WithQuestion(MessageBodies.ChooseSettingsToUpdate)
                               .WithAnswerRow(MessageButtons.ChangeMasterPassword)
+                              .WithAnswerRow(MessageButtons.ChangeLanguage)
                               .WithAnswerRow(MessageButtons.Return)
-                              .ExecuteAnotherForm<ChangeMasterPassword>(MessageButtons.ChangeMasterPassword))
+                              .ExecuteAnotherForm<ChangeMasterPassword>(MessageButtons.ChangeMasterPassword)
+                              .ExecuteAnotherForm<ChangeLanguage>(MessageButtons.ChangeLanguage))
                .Build();
     }
 }
