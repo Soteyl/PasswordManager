@@ -55,4 +55,16 @@
     <data name="Ukrainian" xml:space="preserve">
     <value>🇺🇦 Українська</value>
 </data>
+    <data name="WebsiteNickname" xml:space="preserve">
+        <value>🏷Website nickname</value>
+    </data>
+    <data name="WebsiteUrl" xml:space="preserve">
+        <value>🌐Website Url</value>
+    </data>
+    <data name="Username" xml:space="preserve">
+        <value>👤Username</value>
+    </data>
+    <data name="Password" xml:space="preserve">
+        <value>🔑 Password</value>
+    </data>
 </root>

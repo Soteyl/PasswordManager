@@ -46,4 +46,19 @@ public static class Validators
             ValidResult = isSuccess ? JsonConvert.SerializeObject(account.Account) : null
         };
     }
+    
+    public static FormValidateResult Url(ValidateAnswerEventArgs eventArgs, CancellationToken cancellationToken = default)
+    {
+        if (!eventArgs.Answer.Contains("http")) eventArgs.Answer = "https://" + eventArgs.Answer;
+        Uri.TryCreate(eventArgs.Answer, UriKind.Absolute, out Uri? validatedUri);
+        var validUrl = validatedUri?.ToString() ?? string.Empty;
+        var isValid = validatedUri != null && (validatedUri.Scheme == Uri.UriSchemeHttp || validatedUri.Scheme == Uri.UriSchemeHttps);
+
+        return new FormValidateResult()
+        {
+            IsSuccess = isValid,
+            Error = isValid ? string.Empty : MessageBodies.WrongUrlFormat,
+            ValidResult = isValid ? validUrl : null
+        };
+    }
 }

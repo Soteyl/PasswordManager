@@ -24,7 +24,7 @@ public class SetUpMasterPassword(
 
     private async Task OnComplete(OnCompleteFormEventArgs args, CancellationToken cancellationToken)
     {
-        await userDataRepository.ChangeMasterPasswordAsync(args.ChatId, args.Answers[MasterPassword], cancellationToken);
+        await userDataRepository.ChangeMasterPasswordAsync(args.ChatId, args.Data[MasterPassword], cancellationToken);
         
         await args.Client.SendMessageAsync(MessageBodies.YourMasterPasswordIsApplied, args.ChatId, cancellationToken: cancellationToken);
 

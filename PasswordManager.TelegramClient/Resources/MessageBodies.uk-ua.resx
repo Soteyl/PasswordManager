@@ -125,4 +125,28 @@
     <data name="ChooseOnlyButtonValue" xml:space="preserve">
     <value>⚠️ **Ви можете вибрати тільки значення кнопки.**</value>
     </data>
+    <data name="AccountChanged" xml:space="preserve">
+        <value>✅ **Обліковий запис успішно оновлено!**</value>
+    </data>
+    <data name="ChangePassword" xml:space="preserve">
+        <value>🔑 **Будь ласка, надішліть ваш новий пароль для цього сайту:**</value>
+    </data>
+    <data name="ChangeUsername" xml:space="preserve">
+        <value>👤 **Будь ласка, надішліть ваше нове ім'я користувача для цього сайту:**</value>
+    </data>
+    <data name="ChangeWebsiteNickname" xml:space="preserve">
+        <value>🏷 **Будь ласка, надайте новий псевдонім для вашого сайту:**</value>
+    </data>
+    <data name="ChangeWebsiteUrl" xml:space="preserve">
+        <value>🌐 **Будь ласка, надішліть новий URL вашого сайту:**</value>
+    </data>
+    <data name="ChooseAccountToChange" xml:space="preserve">
+        <value>📂 **Будь ласка, виберіть обліковий запис, який ви бажаєте оновити.**</value>
+    </data>
+    <data name="ChooseWhatChangeInAccount" xml:space="preserve">
+        <value>📄 **URL:** {0}
+🏷 **Назва сайту:** {1}
+👤 **Ім'я користувача:** {2}
+⚠️ **Оберіть, що ви хочете оновити:**</value>
+    </data>
 </root>

@@ -24,7 +24,7 @@ public class AddAccount(PasswordStorageService.PasswordStorageServiceClient stor
             .AddStep(s => s.Builder
                 .WithQuestion(MessageBodies.SendUrlToAddAccount)
                 .WithAnswerKey(Url)
-                .ValidateAnswer(IsValidUrl)
+                .ValidateAnswer(Validators.Url)
                 .WithAnswers(cancelKeyboard))
             .AddStep(s => s.Builder
                 .WithQuestion(MessageBodies.SendWebsiteNicknameToAddAccount)
@@ -52,36 +52,21 @@ public class AddAccount(PasswordStorageService.PasswordStorageServiceClient stor
     
     private async Task OnComplete(OnCompleteFormEventArgs eventArgs, CancellationToken cancellationToken = default)
     {
-        var result = Cryptographer.Encrypt(eventArgs.Answers[Password], eventArgs.Answers[MasterPassword]);
+        var result = Cryptographer.Encrypt(eventArgs.Data[Password], eventArgs.Data[MasterPassword]);
         
         var response = await storageService.AddAccountAsync(new AddAccountCommand()
         {
             CredentialsHash = ByteString.CopyFrom(result.CipherText),
             CredentialsSalt = ByteString.CopyFrom(result.IV),
-            Url = eventArgs.Answers[Url],
-            User = eventArgs.Answers[Username],
+            Url = eventArgs.Data[Url],
+            User = eventArgs.Data[Username],
             UserId = eventArgs.UserData.InternalId.ToString(),
-            WebsiteNickname = eventArgs.Answers[WebsiteNickname]
+            WebsiteNickname = eventArgs.Data[WebsiteNickname]
         }, cancellationToken: cancellationToken);
         
         await eventArgs.Client.SendMessageAsync(
             (response.Response.IsSuccess) ? MessageBodies.AddAccountSuccess : MessageBodies.InternalError,
             eventArgs.ChatId,
             answers: new KeyboardBuilder().Return().Build(), cancellationToken: cancellationToken);
-    }
-    
-    private static FormValidateResult IsValidUrl(ValidateAnswerEventArgs eventArgs, CancellationToken cancellationToken = default)
-    {
-        if (!eventArgs.Answer.Contains("http")) eventArgs.Answer = "https://" + eventArgs.Answer;
-        Uri.TryCreate(eventArgs.Answer, UriKind.Absolute, out Uri? validatedUri);
-        var validUrl = validatedUri?.ToString() ?? string.Empty;
-        var isValid = validatedUri != null && (validatedUri.Scheme == Uri.UriSchemeHttp || validatedUri.Scheme == Uri.UriSchemeHttps);
-
-        return new FormValidateResult()
-        {
-            IsSuccess = isValid,
-            Error = isValid ? string.Empty : MessageBodies.WrongUrlFormat,
-            ValidResult = isValid ? validUrl : null
-        };
     }
 }

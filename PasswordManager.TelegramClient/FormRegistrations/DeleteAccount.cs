@@ -69,7 +69,7 @@ public class DeleteAccount(PasswordStorageService.PasswordStorageServiceClient p
 
     private async Task OnComplete(OnCompleteFormEventArgs eventargs, CancellationToken cancellationtoken)
     {
-        var account = JsonConvert.DeserializeObject<AccountInfo>(eventargs.Answers[Account])!;
+        var account = JsonConvert.DeserializeObject<AccountInfo>(eventargs.Data[Account])!;
         var returnMarkup = new KeyboardBuilder().Return().Build();
 
         var deleteAccountResponse = await passwordStorageService.DeleteAccountAsync(new DeleteAccountCommand()

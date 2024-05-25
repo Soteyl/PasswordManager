@@ -35,6 +35,7 @@ public class GetAccounts(PasswordStorageService.PasswordStorageServiceClient pas
                 {
                     messageButtons[0].Add(MessageButtons.GetAccountCredentials);
                     messageButtons[0].Add(MessageButtons.DeleteAccount);
+                    messageButtons[1].Insert(0, MessageButtons.ChangeAccount);
                 }
 
                 return s.Builder
@@ -45,7 +46,8 @@ public class GetAccounts(PasswordStorageService.PasswordStorageServiceClient pas
                         .WithAnswerKey(Account)
                         .ExecuteAnotherForm<AddAccount>(MessageButtons.AddAccount)
                         .ExecuteAnotherForm<GetAccountCredentials>(MessageButtons.GetAccountCredentials)
-                        .ExecuteAnotherForm<DeleteAccount>(MessageButtons.DeleteAccount);
+                        .ExecuteAnotherForm<DeleteAccount>(MessageButtons.DeleteAccount)
+                        .ExecuteAnotherForm<ChangeAccount>(MessageButtons.ChangeAccount);
             })
             .Build();
     }

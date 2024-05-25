@@ -13,6 +13,7 @@ public class MainMenu: IFormRegistration
                               .WithQuestion(MessageBodies.WrongMessageWarningBody)
                               .WithAnswerRow(MessageButtons.ShowMyAccounts)
                               .WithAnswerRow(MessageButtons.Settings)
+                              .OnlyButtonAnswer()
                               .ExecuteAnotherForm<GetAccounts>(MessageButtons.ShowMyAccounts)
                               .ExecuteAnotherForm<Settings>(MessageButtons.Settings))
                .Build();

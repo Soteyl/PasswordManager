@@ -56,7 +56,7 @@ public class GetAccountCredentials(PasswordStorageService.PasswordStorageService
 
     private async Task OnComplete(OnCompleteFormEventArgs eventArgs, CancellationToken cancellationToken)
     {
-        var account = JsonConvert.DeserializeObject<AccountInfo>(eventArgs.Answers[Account]);
+        var account = JsonConvert.DeserializeObject<AccountInfo>(eventArgs.Data[Account]);
         var answers = new KeyboardBuilder().Return().Build();
         
         var creds = await passwordStorageService.GetAccountCredentialsAsync(new GetAccountCredentialsRequest()
@@ -73,7 +73,7 @@ public class GetAccountCredentials(PasswordStorageService.PasswordStorageService
 
         var decryptedPassword = Cryptographer.Decrypt(creds.CredentialsHash.ToByteArray(), 
             creds.CredentialsSalt.ToByteArray(), 
-            eventArgs.Answers[MasterPassword]);
+            eventArgs.Data[MasterPassword]);
 
         await eventArgs.Client.SendMessageAsync(MessageBodies.HereIsYourPassword, eventArgs.ChatId, cancellationToken: cancellationToken);
 

@@ -69,87 +69,22 @@ public class TelegramFormMessageHandler
         await context.SaveChangesAsync(cancellationToken);
         await context.Entry(formEntity).Reference(x => x.User).LoadAsync(cancellationToken);
 
-        await WriteQuestionAsync(chatId, formEntity, cancellationToken);
-
-        var form = _formModels[formType.FullName!].ResolveForm();
-
-        if (form.Steps.Count == 0)
+        var formStepData = new FormStepData()
         {
-            await form.OnComplete(new OnCompleteFormEventArgs()
-            {
-                Answers = formEntity.Data!,
-                UserData = formEntity.User,
-                Client = _client,
-                ChatId = chatId,
-                FormMessageHandler = this
-            }, cancellationToken);
-        }
+            ChatId = chatId,
+            Message = null,
+            MessageId = null,
+            UserId = userId
+        };
+        await WriteQuestionAsync(formStepData, cancellationToken);
+        await HandleFormRequestAsync(formStepData, cancellationToken);
     }
 
-    public async Task HandleFormRequestAsync(Message message, CancellationToken cancellationToken = default)
+    public async Task HandleFormRequestAsync(FormStepData formStepData, CancellationToken cancellationToken = default)
     {
-        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
-        var formEntity = await GetOneAsync(message.From!.Id, context, false, cancellationToken);
-        if (formEntity is null) return;
-
-        var userData = await _userDataRepository.GetUserDataAsync(message.From.Id, cancellationToken);
-        
-        var currentForm = _formModels[formEntity.FormType].ResolveForm();
-
-        if (currentForm.Steps.Count > formEntity.CurrentStep)
-        {
-            var currentStep = await currentForm.Steps.ElementAt(formEntity.CurrentStep)
-                                               .BuildAsync(userData, formEntity.Data!, this, cancellationToken);
-
-            if (currentStep.NextForms.TryGetValue(message.Text ?? string.Empty, out var nextForm))
-            {
-                await StartFormRequestAsync(nextForm, message.From.Id, message.Chat.Id, cancellationToken);
-
-                return;
-            }
-
-            if (currentStep.IsDeleteAnswer)
-                await _client.DeleteMessageAsync(message.MessageId, message.Chat.Id, cancellationToken: cancellationToken);
-
-            var validateResult = currentStep.Validator?.Invoke(new ValidateAnswerEventArgs()
-            {
-                Answer = message.Text!,
-                UserData = userData,
-                Context = formEntity.Data
-            }, cancellationToken);
-
-            if (validateResult is { IsSuccess: false })
-            {
-                await _client.SendMessageAsync(validateResult.Error!, message.Chat.Id,
-                    answers: currentStep.Answers, cancellationToken: cancellationToken);
-
-                return;
-            }
-
-            formEntity.Data ??= new();
-            formEntity.Data = new(formEntity.Data);
-            formEntity.Data.Add(currentStep.AnswerKey, validateResult?.ValidResult ?? message.Text!);
-
-            formEntity.CurrentStep++;
-        }
-
-        if (formEntity.CurrentStep >= currentForm.Steps.Count)
-        {
-            await FinishCurrentFormAsync(message.From.Id, cancellationToken);
-            await currentForm.OnComplete(new OnCompleteFormEventArgs()
-            {
-                Answers = formEntity.Data,
-                UserData = userData,
-                Client = _client,
-                ChatId = message.Chat.Id,
-                FormMessageHandler = this
-            }, cancellationToken);
-        }
-        else
-        {
-            await WriteQuestionAsync(message.Chat.Id, formEntity, cancellationToken);
-            await context.SaveChangesAsync(cancellationToken);
-        }
+        if (await HandleAnswerAsync(formStepData, cancellationToken))
+            if (await MoveToNextStepAsync(formStepData, cancellationToken))
+                await WriteQuestionAsync(formStepData, cancellationToken);
     }
 
     public async Task FinishCurrentFormAsync(long telegramUserId, CancellationToken cancellationToken = default)
@@ -161,23 +96,128 @@ public class TelegramFormMessageHandler
         context.RequestForms.Remove(currentForm);
         await context.SaveChangesAsync(cancellationToken);
     }
-    
-    private async Task WriteQuestionAsync(long chatId, TelegramUserRequestFormEntity formEntity, CancellationToken cancellationToken = default)
+
+    private async Task<bool> HandleAnswerAsync(FormStepData formStepData, CancellationToken cancellationToken = default)
     {
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        var formEntity = await GetOneAsync(formStepData.UserId, context, false, cancellationToken);
+        if (formEntity is null) return true;
         var currentForm = _formModels[formEntity.FormType].ResolveForm();
+        if (currentForm.Steps.Count <= formEntity.CurrentStep) return true;
+        var userData = await _userDataRepository.GetUserDataAsync(formStepData.UserId, cancellationToken);
+        
+        var currentStep = await currentForm.Steps.ElementAt(formEntity.CurrentStep)
+                                           .BuildAsync(userData, formEntity.Data!, this, cancellationToken);
+
+        if (currentStep.IsDeleteAnswer)
+            await _client.DeleteMessageAsync(formStepData.MessageId!.Value, formStepData.ChatId, cancellationToken: cancellationToken);
+
+        var validateResult = currentStep.Validator?.Invoke(new ValidateAnswerEventArgs()
+        {
+            Answer = formStepData.Message!,
+            UserData = userData,
+            Context = formEntity.Data
+        }, cancellationToken);
+
+        if (validateResult is { IsSuccess: false })
+        {
+            await _client.SendMessageAsync(validateResult.Error!, formStepData.ChatId,
+                answers: currentStep.Answers, cancellationToken: cancellationToken);
+
+            return false;
+        }
+        
+        if (!string.IsNullOrEmpty(currentStep.AnswerKey))
+        {
+            formEntity.Data ??= new();
+            formEntity.Data = new(formEntity.Data);
+            formEntity.Data.TryAdd(currentStep.AnswerKey, validateResult?.ValidResult ?? formStepData.Message!);
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
+    private async Task<bool> MoveToNextStepAsync(FormStepData formStepData, CancellationToken cancellationToken = default)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        var formEntity = await GetOneAsync(formStepData.UserId, context, false, cancellationToken);
+        var currentForm = _formModels[formEntity!.FormType].ResolveForm();
         
         if (formEntity.CurrentStep >= currentForm.Steps.Count)
-            return;
+        {
+            await currentForm.OnComplete(new OnCompleteFormEventArgs()
+            {
+                Data = formEntity.Data!,
+                UserData = formEntity.User,
+                Client = _client,
+                ChatId = formStepData.ChatId,
+                FormMessageHandler = this
+            }, cancellationToken);
+            await FinishCurrentFormAsync(formStepData.UserId, cancellationToken);
+            return false;
+        }
+        
+        FormStep? currentStep = await currentForm.Steps.ElementAt(formEntity.CurrentStep)
+                                                 .BuildAsync(formEntity.User, formEntity.Data!, this, cancellationToken);
+        if (currentStep.NextForms.TryGetValue(formStepData.Message ?? string.Empty, out var nextForm))
+        {
+            await currentForm.OnComplete(new OnCompleteFormEventArgs()
+            {
+                Data = formEntity.Data!,
+                UserData = formEntity.User,
+                Client = _client,
+                ChatId = formStepData.ChatId,
+                FormMessageHandler = this
+            }, cancellationToken);
+            await StartFormRequestAsync(nextForm, formStepData.UserId, formStepData.ChatId, cancellationToken);
+            return false;
+        }
+
+        do
+        {
+            formEntity.CurrentStep++;
+
+            if (formEntity.CurrentStep >= currentForm.Steps.Count)
+                break;
+
+            currentStep = await currentForm.Steps.ElementAt(formEntity.CurrentStep)
+                                           .BuildAsync(formEntity.User, formEntity.Data!, this, cancellationToken);
+        } while (currentStep?.ShouldBeExecuted() is not true);
+
+        if (formEntity.CurrentStep >= currentForm.Steps.Count)
+        {
+            await currentForm.OnComplete?.Invoke(new OnCompleteFormEventArgs()
+            {
+                Data = formEntity.Data!,
+                UserData = formEntity.User,
+                Client = _client,
+                ChatId = formStepData.ChatId,
+                FormMessageHandler = this
+            }, cancellationToken);
+            await FinishCurrentFormAsync(formStepData.UserId, cancellationToken);
+            return false;
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+    
+    private async Task WriteQuestionAsync(FormStepData formStepData, CancellationToken cancellationToken = default)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
+        var formEntity = await GetOneAsync(formStepData.UserId, context, false, cancellationToken);
+        var currentForm = _formModels[formEntity.FormType].ResolveForm();
+        if (formEntity.CurrentStep >= currentForm.Steps.Count) return;
         
         var currentStep = await currentForm.Steps.ElementAt(formEntity.CurrentStep).BuildAsync(formEntity.User, formEntity.Data!, this, cancellationToken);
+        if (currentStep.Question is null) return;
 
-        if (currentStep.Question is null)
-            return;
-
-        var questionMessage = await _client.SendMessageAsync(currentStep.Question, chatId, currentStep.Answers, 
+        var questionMessage = await _client.SendMessageAsync(currentStep.Question, formStepData.ChatId, currentStep.Answers, 
             disableWebPagePreview: currentStep.IsDisableWebPagePreview, cancellationToken: cancellationToken);
         if (currentStep.TimeBeforeQuestionDeletion.HasValue)
-            _ = DeleteMessageAfterDelayAsync(chatId, questionMessage.MessageId,
+            _ = DeleteMessageAfterDelayAsync(formStepData.ChatId, questionMessage.MessageId,
                 currentStep.TimeBeforeQuestionDeletion.Value, cancellationToken: cancellationToken);
     }
     

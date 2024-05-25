@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Microsoft.Extensions.Logging;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Messenger;
 using PasswordManager.TelegramClient.Resources;
@@ -9,7 +10,7 @@ using Telegram.Bot.Types;
 namespace PasswordManager.TelegramClient.FormRegistrations.Handler;
 
 public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessageHandler, 
-    IUserDataRepository userDataRepository): IUpdateHandler
+    IUserDataRepository userDataRepository, ILogger<TelegramMessageCommandHandler> logger): IUpdateHandler
 {
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
@@ -36,7 +37,13 @@ public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessag
         
         if (activeForm is not null)
         {
-            _ = formMessageHandler.HandleFormRequestAsync(update.Message, cancellationToken);
+            _ = formMessageHandler.HandleFormRequestAsync(new FormStepData()
+            {
+                Message = update.Message.Text,
+                MessageId = update.Message.MessageId,
+                UserId = update.Message.From.Id,
+                ChatId = update.Message.Chat.Id
+            }, cancellationToken);
             return;
         }
 
@@ -45,6 +52,7 @@ public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessag
 
     public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        logger.LogError(exception.ToString());  
+        return Task.CompletedTask;
     }
 }
