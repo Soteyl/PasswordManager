@@ -10,7 +10,7 @@ public class OnCompleteFormEventArgs
     
     public TelegramUserDataEntity UserData { get; set; }
     
-    public Dictionary<string, string> Answers { get; set; }
+    public Dictionary<string, string> Data { get; set; }
     
     public IMessengerClient Client { get; set; }
     

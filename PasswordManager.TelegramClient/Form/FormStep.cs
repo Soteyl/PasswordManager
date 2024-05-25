@@ -19,6 +19,8 @@ public class FormStep
 
     public bool IsDeleteAnswer { get; private set; }
 
+    public Func<bool> ShouldBeExecuted { get; private set; } = () => true;
+
     public TimeSpan? TimeBeforeQuestionDeletion { get; private set; }
 
     public bool IsDeleteQuestionAfterAnswer { get; private set; }
@@ -39,6 +41,13 @@ public class FormStep
     public FormStep()
     {
         
+    }
+
+    public FormStep ConditionalStep(Func<bool> condition)
+    {
+        ShouldBeExecuted = condition;
+
+        return this;
     }
 
     public FormStep WithQuestion(string question)

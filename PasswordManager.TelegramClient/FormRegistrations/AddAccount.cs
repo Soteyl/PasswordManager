@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf;
+using Newtonsoft.Json;
 using PasswordManager.TelegramClient.Common.Cryptography;
 using PasswordManager.TelegramClient.Common.Keyboard;
 using PasswordManager.TelegramClient.Common.Validation;
@@ -15,7 +16,7 @@ public class AddAccount(PasswordStorageService.PasswordStorageServiceClient stor
     private const string WebsiteNickname = "websiteNickname";
     private const string Username = "username";
     private const string Password = "password";
-    private const string MasterPassword = "masterPassword";
+    private const string EncryptedPassword = "masterPassword";
     
     public FormModel ResolveForm()
     {
@@ -24,7 +25,7 @@ public class AddAccount(PasswordStorageService.PasswordStorageServiceClient stor
             .AddStep(s => s.Builder
                 .WithQuestion(MessageBodies.SendUrlToAddAccount)
                 .WithAnswerKey(Url)
-                .ValidateAnswer(IsValidUrl)
+                .ValidateAnswer(Validators.Url)
                 .WithAnswers(cancelKeyboard))
             .AddStep(s => s.Builder
                 .WithQuestion(MessageBodies.SendWebsiteNicknameToAddAccount)
@@ -42,8 +43,19 @@ public class AddAccount(PasswordStorageService.PasswordStorageServiceClient stor
             .AddStep(s => s.Builder
                 .WithQuestion(MessageBodiesParametrized.AddAccountFinalStep(
                     s.Data[WebsiteNickname], s.Data[Url], s.Data[Username], s.Data[Password]))
-                .WithAnswerKey(MasterPassword)
-                .ValidateAnswer(Validators.MasterPassword)
+                .WithAnswerRow(MessageButtons.Cancel)
+                .WithAnswerKey(EncryptedPassword)
+                .ValidateAnswer((args, ct) =>
+                {
+                    var validation = Validators.MasterPassword(args, ct);
+                    if (!validation.IsSuccess) return validation;
+
+                    return new FormValidateResult()
+                    {
+                        ValidResult = JsonConvert.SerializeObject(Cryptographer.Encrypt(s.Data[Password], args.Answer)),
+                        IsSuccess = true
+                    };
+                })
                 .DeleteQuestionAfterAnswer()
                 .DeleteAnswerMessage())
             .OnComplete(OnComplete)
@@ -52,36 +64,21 @@ public class AddAccount(PasswordStorageService.PasswordStorageServiceClient stor
     
     private async Task OnComplete(OnCompleteFormEventArgs eventArgs, CancellationToken cancellationToken = default)
     {
-        var result = Cryptographer.Encrypt(eventArgs.Answers[Password], eventArgs.Answers[MasterPassword]);
+        var result = JsonConvert.DeserializeObject<EncryptResult>(eventArgs.Data[EncryptedPassword])!;
         
         var response = await storageService.AddAccountAsync(new AddAccountCommand()
         {
             CredentialsHash = ByteString.CopyFrom(result.CipherText),
             CredentialsSalt = ByteString.CopyFrom(result.IV),
-            Url = eventArgs.Answers[Url],
-            User = eventArgs.Answers[Username],
+            Url = eventArgs.Data[Url],
+            User = eventArgs.Data[Username],
             UserId = eventArgs.UserData.InternalId.ToString(),
-            WebsiteNickname = eventArgs.Answers[WebsiteNickname]
+            WebsiteNickname = eventArgs.Data[WebsiteNickname]
         }, cancellationToken: cancellationToken);
         
         await eventArgs.Client.SendMessageAsync(
             (response.Response.IsSuccess) ? MessageBodies.AddAccountSuccess : MessageBodies.InternalError,
             eventArgs.ChatId,
             answers: new KeyboardBuilder().Return().Build(), cancellationToken: cancellationToken);
-    }
-    
-    private static FormValidateResult IsValidUrl(ValidateAnswerEventArgs eventArgs, CancellationToken cancellationToken = default)
-    {
-        if (!eventArgs.Answer.Contains("http")) eventArgs.Answer = "https://" + eventArgs.Answer;
-        Uri.TryCreate(eventArgs.Answer, UriKind.Absolute, out Uri? validatedUri);
-        var validUrl = validatedUri?.ToString() ?? string.Empty;
-        var isValid = validatedUri != null && (validatedUri.Scheme == Uri.UriSchemeHttp || validatedUri.Scheme == Uri.UriSchemeHttps);
-
-        return new FormValidateResult()
-        {
-            IsSuccess = isValid,
-            Error = isValid ? string.Empty : MessageBodies.WrongUrlFormat,
-            ValidResult = isValid ? validUrl : null
-        };
     }
 }

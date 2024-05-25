@@ -122,5 +122,29 @@ namespace PasswordManager.TelegramClient.Resources {
                 return ResourceManager.GetString("Ukrainian", resourceCulture);
             }
         }
+        
+        internal static string WebsiteNickname {
+            get {
+                return ResourceManager.GetString("WebsiteNickname", resourceCulture);
+            }
+        }
+        
+        internal static string WebsiteUrl {
+            get {
+                return ResourceManager.GetString("WebsiteUrl", resourceCulture);
+            }
+        }
+        
+        internal static string Username {
+            get {
+                return ResourceManager.GetString("Username", resourceCulture);
+            }
+        }
+        
+        internal static string Password {
+            get {
+                return ResourceManager.GetString("Password", resourceCulture);
+            }
+        }
     }
 }

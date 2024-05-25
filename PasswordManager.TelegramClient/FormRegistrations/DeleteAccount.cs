@@ -30,7 +30,7 @@ public class DeleteAccount(PasswordStorageService.PasswordStorageServiceClient p
                 else if (accounts.Accounts.Count == 0)
                     message = MessageBodies.YouHaveNoAccounts;
 
-                var accountsMarkup = accounts.Accounts.Select(x => $"{x.WebsiteNickname} ({x.User})").ToList();
+                var accountsMarkup = accounts.Accounts.Select((x, i) => $"{i + 1}. {x.WebsiteNickname} ({x.User})").ToList();
                 accountsMarkup.Add(MessageButtons.Cancel);
 
                 return s.Builder
@@ -69,7 +69,7 @@ public class DeleteAccount(PasswordStorageService.PasswordStorageServiceClient p
 
     private async Task OnComplete(OnCompleteFormEventArgs eventargs, CancellationToken cancellationtoken)
     {
-        var account = JsonConvert.DeserializeObject<AccountInfo>(eventargs.Answers[Account])!;
+        var account = JsonConvert.DeserializeObject<AccountInfo>(eventargs.Data[Account])!;
         var returnMarkup = new KeyboardBuilder().Return().Build();
 
         var deleteAccountResponse = await passwordStorageService.DeleteAccountAsync(new DeleteAccountCommand()

@@ -31,7 +31,7 @@ public class ChangeMasterPassword(IUserDataRepository userDataRepository,
 
     private async Task CompleteChangeMasterPassword(OnCompleteFormEventArgs eventArgs, CancellationToken cancellationToken)
     {
-        var passwords = eventArgs.Answers[MasterPassword].Split(Environment.NewLine);
+        var passwords = eventArgs.Data[MasterPassword].Split(Environment.NewLine);
         var oldPassword = passwords[0];
         var newPassword = passwords[1];
 

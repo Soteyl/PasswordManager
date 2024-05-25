@@ -28,4 +28,9 @@ public static class MessageBodiesParametrized
     {
         return string.Format(MessageBodies.DeleteAccountConfirmation, url, websiteNickname, username);
     }
+    
+    public static string ChooseWhatChangeInAccount(AccountInfo account)
+    {
+        return string.Format(MessageBodies.ChooseWhatChangeInAccount, account.WebsiteNickname, account.Url, account.User);
+    }
 }

@@ -44,7 +44,7 @@ public class ChangeLanguage(IUserDataRepository userDataRepository): IFormRegist
 
     private async Task SelectLanguage(OnCompleteFormEventArgs eventArgs, CancellationToken cancellationToken)
     {
-        var locale = Enum.Parse<Locale>(eventArgs.Answers[LanguageKey], false);
+        var locale = Enum.Parse<Locale>(eventArgs.Data[LanguageKey], false);
         await userDataRepository.ChangeLocaleAsync(eventArgs.UserData.TelegramUserId, locale, cancellationToken);
         CultureInfo.CurrentUICulture = locale.ToCulture();
         await eventArgs.FormMessageHandler.StartFormRequestAsync<MainMenu>(eventArgs.UserData.TelegramUserId, eventArgs.ChatId, cancellationToken);

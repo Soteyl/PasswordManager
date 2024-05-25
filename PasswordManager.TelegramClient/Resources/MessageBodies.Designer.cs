@@ -135,9 +135,9 @@ namespace PasswordManager.TelegramClient.Resources {
             }
         }
         
-        internal static string SendMasterPasswordToEncrypt {
+        internal static string SendMasterPasswordToDecrypt {
             get {
-                return ResourceManager.GetString("SendMasterPasswordToEncrypt", resourceCulture);
+                return ResourceManager.GetString("SendMasterPasswordToDecrypt", resourceCulture);
             }
         }
         
@@ -222,6 +222,54 @@ namespace PasswordManager.TelegramClient.Resources {
         internal static string ChooseOnlyButtonValue {
             get {
                 return ResourceManager.GetString("ChooseOnlyButtonValue", resourceCulture);
+            }
+        }
+        
+        internal static string ChooseAccountToChange {
+            get {
+                return ResourceManager.GetString("ChooseAccountToChange", resourceCulture);
+            }
+        }
+        
+        internal static string ChooseWhatChangeInAccount {
+            get {
+                return ResourceManager.GetString("ChooseWhatChangeInAccount", resourceCulture);
+            }
+        }
+        
+        internal static string ChangeWebsiteNickname {
+            get {
+                return ResourceManager.GetString("ChangeWebsiteNickname", resourceCulture);
+            }
+        }
+        
+        internal static string ChangeWebsiteUrl {
+            get {
+                return ResourceManager.GetString("ChangeWebsiteUrl", resourceCulture);
+            }
+        }
+        
+        internal static string ChangeUsername {
+            get {
+                return ResourceManager.GetString("ChangeUsername", resourceCulture);
+            }
+        }
+        
+        internal static string ChangePassword {
+            get {
+                return ResourceManager.GetString("ChangePassword", resourceCulture);
+            }
+        }
+        
+        internal static string AccountChanged {
+            get {
+                return ResourceManager.GetString("AccountChanged", resourceCulture);
+            }
+        }
+        
+        internal static string SendMasterPasswordToEncrypt {
+            get {
+                return ResourceManager.GetString("SendMasterPasswordToEncrypt", resourceCulture);
             }
         }
     }

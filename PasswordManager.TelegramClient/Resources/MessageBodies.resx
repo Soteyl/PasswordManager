@@ -67,7 +67,7 @@
     <data name="AddAccountSuccess" xml:space="preserve">
         <value>✅ **Account successfully added!**</value>
     </data>
-    <data name="SendMasterPasswordToEncrypt" xml:space="preserve">
+    <data name="SendMasterPasswordToDecrypt" xml:space="preserve">
         <value>🔐 **Please provide your master password to decrypt data:**</value>
     </data>
     <data name="GetCredentialsProvideMasterPassword" xml:space="preserve">
@@ -124,5 +124,32 @@ newPassword</value>
     </data>
     <data name="ChooseOnlyButtonValue" xml:space="preserve">
     <value>⚠️ **You can only choose a button value.**</value>
+    </data>
+    <data name="ChooseAccountToChange" xml:space="preserve">
+        <value>📂 **Please choose the account you want to update.**</value>
+    </data>
+    <data name="ChooseWhatChangeInAccount" xml:space="preserve">
+        <value>📄 **URL:** {0}
+🏷 **Website Name:** {1}
+👤 **Username:** {2}
+⚠️ **Choose what do you want to change:**</value>
+    </data>
+    <data name="ChangeWebsiteNickname" xml:space="preserve">
+        <value>🏷 **Please provide a new nickname for your website:**</value>
+    </data>
+    <data name="ChangeWebsiteUrl" xml:space="preserve">
+        <value>🌐 **Please send new URL of your website:**</value>
+    </data>
+    <data name="ChangeUsername" xml:space="preserve">
+        <value>👤 **Please send your new username for this website:**</value>
+    </data>
+    <data name="ChangePassword" xml:space="preserve">
+        <value>🔑 **Please send your new password for this website:**</value>
+    </data>
+    <data name="AccountChanged" xml:space="preserve">
+        <value>✅ **Account successfully updated!**</value>
+    </data>
+    <data name="SendMasterPasswordToEncrypt" xml:space="preserve">
+        <value>🔐 **Please provide your master password to encrypt data:**</value>
     </data>
 </root>
