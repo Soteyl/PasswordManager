@@ -30,7 +30,7 @@ public class DeleteAccount(PasswordStorageService.PasswordStorageServiceClient p
                 else if (accounts.Accounts.Count == 0)
                     message = MessageBodies.YouHaveNoAccounts;
 
-                var accountsMarkup = accounts.Accounts.Select(x => $"{x.WebsiteNickname} ({x.User})").ToList();
+                var accountsMarkup = accounts.Accounts.Select((x, i) => $"{i + 1}. {x.WebsiteNickname} ({x.User})").ToList();
                 accountsMarkup.Add(MessageButtons.Cancel);
 
                 return s.Builder

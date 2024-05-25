@@ -28,7 +28,7 @@ public class GetAccounts(PasswordStorageService.PasswordStorageServiceClient pas
                 var messageButtons = new List<List<string>>()
                 {
                     new() { MessageButtons.AddAccount },
-                    new() { MessageButtons.Cancel }
+                    new() { MessageButtons.Return }
                 };
 
                 if (accounts.Accounts.Count > 0)

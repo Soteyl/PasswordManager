@@ -11,7 +11,7 @@ namespace PasswordManager.TelegramClient.FormRegistrations.Handler;
 
 public class TelegramFormMessageHandler
 {
-    private readonly Type _defaultForm = typeof(MainMenu);
+    private readonly Type? _defaultForm = null;
 
     private readonly IDbContextFactory<TelegramClientContext> _contextFactory;
     
@@ -34,7 +34,7 @@ public class TelegramFormMessageHandler
         }
     }
     
-    public Task<Type> GetFormByMessageAsync(Message message, CancellationToken cancellationToken = default)
+    public Task<Type?> GetFormByMessageAsync(Message message, CancellationToken cancellationToken = default)
     {
         var formType = _defaultForm;
         var form = _formModels.FirstOrDefault(x => x.Value.ResolveForm().Commands.Contains(message.Text));
@@ -77,7 +77,6 @@ public class TelegramFormMessageHandler
             UserId = userId
         };
         await WriteQuestionAsync(formStepData, cancellationToken);
-        await HandleFormRequestAsync(formStepData, cancellationToken);
     }
 
     public async Task HandleFormRequestAsync(FormStepData formStepData, CancellationToken cancellationToken = default)
@@ -144,17 +143,19 @@ public class TelegramFormMessageHandler
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
         var formEntity = await GetOneAsync(formStepData.UserId, context, false, cancellationToken);
         var currentForm = _formModels[formEntity!.FormType].ResolveForm();
+        var completeArgs = new OnCompleteFormEventArgs()
+        {
+            Data = formEntity.Data!,
+            UserData = formEntity.User,
+            Client = _client,
+            ChatId = formStepData.ChatId,
+            FormMessageHandler = this
+        };
         
         if (formEntity.CurrentStep >= currentForm.Steps.Count)
         {
-            await currentForm.OnComplete(new OnCompleteFormEventArgs()
-            {
-                Data = formEntity.Data!,
-                UserData = formEntity.User,
-                Client = _client,
-                ChatId = formStepData.ChatId,
-                FormMessageHandler = this
-            }, cancellationToken);
+            if (currentForm.OnComplete is not null)
+                await currentForm.OnComplete(completeArgs, cancellationToken);
             await FinishCurrentFormAsync(formStepData.UserId, cancellationToken);
             return false;
         }
@@ -163,14 +164,8 @@ public class TelegramFormMessageHandler
                                                  .BuildAsync(formEntity.User, formEntity.Data!, this, cancellationToken);
         if (currentStep.NextForms.TryGetValue(formStepData.Message ?? string.Empty, out var nextForm))
         {
-            await currentForm.OnComplete(new OnCompleteFormEventArgs()
-            {
-                Data = formEntity.Data!,
-                UserData = formEntity.User,
-                Client = _client,
-                ChatId = formStepData.ChatId,
-                FormMessageHandler = this
-            }, cancellationToken);
+            if (currentForm.OnComplete is not null)
+                await currentForm.OnComplete(completeArgs, cancellationToken);
             await StartFormRequestAsync(nextForm, formStepData.UserId, formStepData.ChatId, cancellationToken);
             return false;
         }
@@ -188,14 +183,8 @@ public class TelegramFormMessageHandler
 
         if (formEntity.CurrentStep >= currentForm.Steps.Count)
         {
-            await currentForm.OnComplete?.Invoke(new OnCompleteFormEventArgs()
-            {
-                Data = formEntity.Data!,
-                UserData = formEntity.User,
-                Client = _client,
-                ChatId = formStepData.ChatId,
-                FormMessageHandler = this
-            }, cancellationToken);
+            if (currentForm.OnComplete is not null)
+                await currentForm.OnComplete.Invoke(completeArgs, cancellationToken);
             await FinishCurrentFormAsync(formStepData.UserId, cancellationToken);
             return false;
         }

@@ -135,9 +135,9 @@ namespace PasswordManager.TelegramClient.Resources {
             }
         }
         
-        internal static string SendMasterPasswordToEncrypt {
+        internal static string SendMasterPasswordToDecrypt {
             get {
-                return ResourceManager.GetString("SendMasterPasswordToEncrypt", resourceCulture);
+                return ResourceManager.GetString("SendMasterPasswordToDecrypt", resourceCulture);
             }
         }
         
@@ -264,6 +264,12 @@ namespace PasswordManager.TelegramClient.Resources {
         internal static string AccountChanged {
             get {
                 return ResourceManager.GetString("AccountChanged", resourceCulture);
+            }
+        }
+        
+        internal static string SendMasterPasswordToEncrypt {
+            get {
+                return ResourceManager.GetString("SendMasterPasswordToEncrypt", resourceCulture);
             }
         }
     }

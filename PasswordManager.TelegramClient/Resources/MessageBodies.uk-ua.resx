@@ -67,7 +67,7 @@
     <data name="AddAccountSuccess" xml:space="preserve">
         <value>✅ **Обліковий запис успішно додано!**</value>
     </data>
-    <data name="SendMasterPasswordToEncrypt" xml:space="preserve">
+    <data name="SendMasterPasswordToDecrypt" xml:space="preserve">
         <value>🔐 **Будь ласка, надайте ваш майстер-пароль для розшифрування даних:**</value>
     </data>
     <data name="GetCredentialsProvideMasterPassword" xml:space="preserve">
@@ -148,5 +148,8 @@
 🏷 **Назва сайту:** {1}
 👤 **Ім'я користувача:** {2}
 ⚠️ **Оберіть, що ви хочете оновити:**</value>
+    </data>
+    <data name="SendMasterPasswordToEncrypt" xml:space="preserve">
+        <value>🔐 **Будь ласка, надайте ваш майстер-пароль для зашифрування даних:**</value>
     </data>
 </root>

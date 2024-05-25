@@ -28,14 +28,7 @@ public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessag
             return;
         }
         
-        if (form == typeof(Cancel))
-        {
-            _ = formMessageHandler.StartFormRequestAsync<Cancel>(update.Message.From!.Id, 
-                update.Message.Chat.Id, cancellationToken);
-            return;
-        }
-        
-        if (activeForm is not null)
+        if (activeForm is not null && form != typeof(MainMenu))
         {
             _ = formMessageHandler.HandleFormRequestAsync(new FormStepData()
             {
@@ -47,7 +40,7 @@ public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessag
             return;
         }
 
-        await formMessageHandler.StartFormRequestAsync(form, update.Message.From.Id, update.Message.Chat.Id, cancellationToken);
+        await formMessageHandler.StartFormRequestAsync(form ?? typeof(MainMenu), update.Message.From.Id, update.Message.Chat.Id, cancellationToken);
     }
 
     public Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)

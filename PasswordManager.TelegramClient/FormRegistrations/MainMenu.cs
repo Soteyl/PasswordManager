@@ -9,6 +9,7 @@ public class MainMenu: IFormRegistration
     public FormModel ResolveForm()
     {
         return new FormBuilder()
+               .RegisterCommands(MessageButtons.Cancel, MessageButtons.Return)
                .AddStep(s => s.Builder
                               .WithQuestion(MessageBodies.WrongMessageWarningBody)
                               .WithAnswerRow(MessageButtons.ShowMyAccounts)

@@ -40,7 +40,7 @@ public class ChangeAccount(PasswordStorageService.PasswordStorageServiceClient p
                else if (accounts.Accounts.Count == 0)
                    message = MessageBodies.YouHaveNoAccounts;
 
-               var accountsMarkup = accounts.Accounts.Select(x => $"{x.WebsiteNickname} ({x.User})").ToList();
+               var accountsMarkup = accounts.Accounts.Select((x, i) => $"{i + 1}. {x.WebsiteNickname} ({x.User})").ToList();
                accountsMarkup.Add(MessageButtons.Cancel);
 
                return s.Builder
@@ -69,7 +69,8 @@ public class ChangeAccount(PasswordStorageService.PasswordStorageServiceClient p
                var changeAction = s.Data[ChangeAction];
                var builder = s.Builder
                               .WithQuestion(_questionByAnswer[changeAction])
-                              .WithAnswerKey(Answer);
+                              .WithAnswerKey(Answer)
+                              .WithAnswerRow(MessageButtons.Cancel);
 
                if (changeAction == MessageButtons.WebsiteUrl)
                    builder = builder.ValidateAnswer(Validators.Url);
@@ -80,7 +81,7 @@ public class ChangeAccount(PasswordStorageService.PasswordStorageServiceClient p
                return builder;
            })
            .AddStep(s => s.Builder
-                          .ConditionalStep(() => s.Data[Answer] == MessageButtons.Password)
+                          .ConditionalStep(() => s.Data[ChangeAction] == MessageButtons.Password)
                           .WithQuestion(MessageBodies.SendMasterPasswordToEncrypt)
                           .ValidateAnswer(Validators.MasterPassword)
                           .WithAnswerRow(MessageButtons.Cancel)

@@ -30,7 +30,7 @@ public class GetAccountCredentials(PasswordStorageService.PasswordStorageService
                 else if (accounts.Accounts.Count == 0)
                     message = MessageBodies.YouHaveNoAccounts;
                 
-                var accountsMarkup = accounts.Accounts.Select(x => $"{x.WebsiteNickname} ({x.User})").ToList();
+                var accountsMarkup = accounts.Accounts.Select((x, i) => $"{i + 1}. {x.WebsiteNickname} ({x.User})").ToList();
                 accountsMarkup.Add(MessageButtons.Cancel);
                 
                 return s.Builder
@@ -75,7 +75,10 @@ public class GetAccountCredentials(PasswordStorageService.PasswordStorageService
             creds.CredentialsSalt.ToByteArray(), 
             eventArgs.Data[MasterPassword]);
 
-        await eventArgs.Client.SendMessageAsync(MessageBodies.HereIsYourPassword, eventArgs.ChatId, cancellationToken: cancellationToken);
+        await eventArgs.Client.SendMessageAsync(MessageBodies.HereIsYourPassword, 
+            eventArgs.ChatId, 
+            answers: new KeyboardBuilder().Return().Build(), 
+            cancellationToken: cancellationToken);
 
         var passwordMessage = await eventArgs.Client.SendMessageAsync(decryptedPassword, eventArgs.ChatId,
             answers: answers, cancellationToken: cancellationToken);

@@ -67,7 +67,7 @@
     <data name="AddAccountSuccess" xml:space="preserve">
         <value>✅ **Account successfully added!**</value>
     </data>
-    <data name="SendMasterPasswordToEncrypt" xml:space="preserve">
+    <data name="SendMasterPasswordToDecrypt" xml:space="preserve">
         <value>🔐 **Please provide your master password to decrypt data:**</value>
     </data>
     <data name="GetCredentialsProvideMasterPassword" xml:space="preserve">
@@ -148,5 +148,8 @@ newPassword</value>
     </data>
     <data name="AccountChanged" xml:space="preserve">
         <value>✅ **Account successfully updated!**</value>
+    </data>
+    <data name="SendMasterPasswordToEncrypt" xml:space="preserve">
+        <value>🔐 **Please provide your master password to encrypt data:**</value>
     </data>
 </root>

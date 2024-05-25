@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using PasswordManager.TelegramClient.Common.Cryptography;
 using PasswordManager.TelegramClient.Form.Contracts;
 using PasswordManager.TelegramClient.Resources;
@@ -31,19 +32,20 @@ public static class Validators
     public static FormValidateResult Account(ValidateAnswerEventArgs eventArgs, 
         PasswordStorageService.PasswordStorageServiceClient passwordStorageService, CancellationToken cancellationToken)
     {
-        var splittedMessageData = eventArgs.Answer.Split(" ");
-        var account = passwordStorageService.GetAccountByWebsiteNicknameAndUser(new GetAccountByWebsiteNicknameAndUserRequest()
+        var number = int.Parse(eventArgs.Answer.Split(".")[0]);
+        var accountsResponse = passwordStorageService.GetAccountsAsync(new GetAccountsRequest()
         {
             UserId = eventArgs.UserData.InternalId.ToString(),
-            WebsiteNickname = splittedMessageData[0],
-            AccountUser = splittedMessageData[1].Replace("(", "").Replace(")", "")
-        });
-        bool isSuccess = account.Response.IsSuccess && account.Account != null;
+            Limit = 1,
+            Skip = number - 1
+        }, cancellationToken: cancellationToken).ResponseAsync.Result;
+        var account = accountsResponse.Accounts.FirstOrDefault();
+        bool isSuccess = accountsResponse.Response.IsSuccess && account != null;
         return new FormValidateResult()
         {
             IsSuccess = isSuccess,
             Error = isSuccess ? null : MessageBodies.InternalError,
-            ValidResult = isSuccess ? JsonConvert.SerializeObject(account.Account) : null
+            ValidResult = isSuccess ? JsonConvert.SerializeObject(account) : null
         };
     }
     

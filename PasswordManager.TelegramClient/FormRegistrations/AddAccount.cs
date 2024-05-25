@@ -42,6 +42,7 @@ public class AddAccount(PasswordStorageService.PasswordStorageServiceClient stor
             .AddStep(s => s.Builder
                 .WithQuestion(MessageBodiesParametrized.AddAccountFinalStep(
                     s.Data[WebsiteNickname], s.Data[Url], s.Data[Username], s.Data[Password]))
+                .WithAnswerRow(MessageButtons.Cancel)
                 .WithAnswerKey(MasterPassword)
                 .ValidateAnswer(Validators.MasterPassword)
                 .DeleteQuestionAfterAnswer()
