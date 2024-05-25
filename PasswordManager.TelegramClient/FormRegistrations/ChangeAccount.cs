@@ -15,7 +15,7 @@ public class ChangeAccount(PasswordStorageService.PasswordStorageServiceClient p
     private const string Account = "account";
     private const string ChangeAction = "changeAction";
     private const string Answer = "answer";
-    private const string MasterPassword = "masterPassword";
+    private const string EncryptedPassword = "masterPassword";
     private readonly Dictionary<string, string> _questionByAnswer = new()
     {
         { MessageButtons.WebsiteNickname, MessageBodies.ChangeWebsiteNickname },
@@ -83,9 +83,19 @@ public class ChangeAccount(PasswordStorageService.PasswordStorageServiceClient p
            .AddStep(s => s.Builder
                           .ConditionalStep(() => s.Data[ChangeAction] == MessageButtons.Password)
                           .WithQuestion(MessageBodies.SendMasterPasswordToEncrypt)
-                          .ValidateAnswer(Validators.MasterPassword)
+                          .ValidateAnswer((args, ct) =>
+                          {
+                              var validation = Validators.MasterPassword(args, ct);
+                              if (!validation.IsSuccess) return validation;
+
+                              return new FormValidateResult()
+                              {
+                                  ValidResult = JsonConvert.SerializeObject(Cryptographer.Encrypt(s.Data[Answer], args.Answer)),
+                                  IsSuccess = true
+                              };
+                          })
                           .WithAnswerRow(MessageButtons.Cancel)
-                          .WithAnswerKey(MasterPassword)
+                          .WithAnswerKey(EncryptedPassword)
                           .DeleteAnswerMessage())
            .OnComplete(CompleteChangingAccount)
            .Build();
@@ -128,7 +138,7 @@ public class ChangeAccount(PasswordStorageService.PasswordStorageServiceClient p
         if (!result.Response.IsSuccess)
             return result.Response;
 
-        var password = Cryptographer.Encrypt(eventArgs.Data[Answer], eventArgs.Data[MasterPassword]);
+        var password = JsonConvert.DeserializeObject<EncryptResult>(eventArgs.Data[EncryptedPassword])!;
 
         var response = await passwordStorageService.ChangeManyAccountCredentialsAsync(new ChangeManyAccountCredentialsCommand()
         {

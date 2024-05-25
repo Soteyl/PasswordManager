@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf;
+using Newtonsoft.Json;
 using PasswordManager.TelegramClient.Common.Cryptography;
 using PasswordManager.TelegramClient.Common.Keyboard;
 using PasswordManager.TelegramClient.Common.Validation;
@@ -15,7 +16,7 @@ public class AddAccount(PasswordStorageService.PasswordStorageServiceClient stor
     private const string WebsiteNickname = "websiteNickname";
     private const string Username = "username";
     private const string Password = "password";
-    private const string MasterPassword = "masterPassword";
+    private const string EncryptedPassword = "masterPassword";
     
     public FormModel ResolveForm()
     {
@@ -43,8 +44,18 @@ public class AddAccount(PasswordStorageService.PasswordStorageServiceClient stor
                 .WithQuestion(MessageBodiesParametrized.AddAccountFinalStep(
                     s.Data[WebsiteNickname], s.Data[Url], s.Data[Username], s.Data[Password]))
                 .WithAnswerRow(MessageButtons.Cancel)
-                .WithAnswerKey(MasterPassword)
-                .ValidateAnswer(Validators.MasterPassword)
+                .WithAnswerKey(EncryptedPassword)
+                .ValidateAnswer((args, ct) =>
+                {
+                    var validation = Validators.MasterPassword(args, ct);
+                    if (!validation.IsSuccess) return validation;
+
+                    return new FormValidateResult()
+                    {
+                        ValidResult = JsonConvert.SerializeObject(Cryptographer.Encrypt(s.Data[Password], args.Answer)),
+                        IsSuccess = true
+                    };
+                })
                 .DeleteQuestionAfterAnswer()
                 .DeleteAnswerMessage())
             .OnComplete(OnComplete)
@@ -53,7 +64,7 @@ public class AddAccount(PasswordStorageService.PasswordStorageServiceClient stor
     
     private async Task OnComplete(OnCompleteFormEventArgs eventArgs, CancellationToken cancellationToken = default)
     {
-        var result = Cryptographer.Encrypt(eventArgs.Data[Password], eventArgs.Data[MasterPassword]);
+        var result = JsonConvert.DeserializeObject<EncryptResult>(eventArgs.Data[EncryptedPassword])!;
         
         var response = await storageService.AddAccountAsync(new AddAccountCommand()
         {
