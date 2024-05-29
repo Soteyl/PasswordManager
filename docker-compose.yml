@@ -1,0 +1,18 @@
+﻿version: '3.4'
+
+services:
+  password_storage_service:
+    image: password_storage_service_image
+    build:
+      context: .
+      dockerfile: ./PasswordStorageService/PasswordStorageService.Dockerfile
+    ports:
+      - "80:80"
+
+  telegram_client:
+    image: telegram_client_image
+    build:
+      context: .
+      dockerfile: ./PasswordManager.TelegramClient/TelegramClient.Dockerfile
+    depends_on:
+      - aspnetcore_server
