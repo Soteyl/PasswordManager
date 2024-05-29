@@ -157,11 +157,12 @@ newPassword</value>
 
 This bot securely manages your passwords. Here's how it works:
 
-- *No Master Password Storage*: The master password is not stored.
-- *Encrypted Passwords*: All passwords are encrypted.
-- *Symmetric Encryption*: Uses symmetric encryption.
-- *Master Password Usage*: Used only for encryption/decryption and immediately erased from memory.
+- *Encrypted Passwords*: All passwords are encrypted via symmetric encryption.
+- *Master Password Usage*: Is not stored, used only for encryption and immediately erased from memory.
 - *Open Source*: The code is fully open source.
+- *No limits*: The bot is fully free and has no limits.
+
+*⚠️Important Notice*: The complexity of your master password directly affects the security of using the bot. Therefore, it is highly recommended to use a complex password for enhanced security.
 
 For any issues, please create an [issue on GitHub](https://github.com/Soteyl/PasswordManager) 🐛.
 
