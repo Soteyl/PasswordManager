@@ -146,5 +146,11 @@ namespace PasswordManager.TelegramClient.Resources {
                 return ResourceManager.GetString("Password", resourceCulture);
             }
         }
+        
+        internal static string About {
+            get {
+                return ResourceManager.GetString("About", resourceCulture);
+            }
+        }
     }
 }

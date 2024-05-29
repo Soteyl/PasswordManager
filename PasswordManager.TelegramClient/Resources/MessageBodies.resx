@@ -17,139 +17,156 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="WrongMessageWarningBody" xml:space="preserve">
-        <value>⚠️ **Please choose an option.**</value>
+        <value>⚠️ *Please choose an option.*</value>
     </data>
     <data name="SetUpMasterPasswordMessageBody" xml:space="preserve">
-        <value>🔐 **Set up your master password:**</value>
+        <value>🔐 *Set up your master password:*</value>
     </data>
     <data name="YouNeedAtLeastOneCharForPassword" xml:space="preserve">
-        <value>⚠️ **Your master password must contain at least one character.**</value>
+        <value>⚠️ *Your master password must contain at least one character.*</value>
     </data>
     <data name="YourMasterPasswordIsApplied" xml:space="preserve">
-        <value>✅ **Your master password has been successfully applied!**</value>
+        <value>✅ *Your master password has been successfully applied!*</value>
     </data>
     <data name="YouHaveNoAccounts" xml:space="preserve">
-        <value>📭 **Your accounts list is empty.**</value>
+        <value>📭 *Your accounts list is empty.*</value>
     </data>
     <data name="AccountsList" xml:space="preserve">
-        <value>📄 **Here are your accounts:**
+        <value>📄 *Here are your accounts:*
 {0}</value>
     </data>
     <data name="InternalError" xml:space="preserve">
-        <value>❌ **Internal error. Please contact the developer.**</value>
+        <value>❌ *Internal error. Please contact the developer.*</value>
     </data>
     <data name="SendUrlToAddAccount" xml:space="preserve">
-        <value>🌐 **Please send the URL of your website:**</value>
+        <value>🌐 *Please send the URL of your website:*</value>
     </data>
     <data name="SendWebsiteNicknameToAddAccount" xml:space="preserve">
-        <value>🏷 **Please provide a nickname for your website:**</value>
+        <value>🏷 *Please provide a nickname for your website:*</value>
     </data>
     <data name="SendUserToAddAccount" xml:space="preserve">
-        <value>👤 **Please send your username for this website:**</value>
+        <value>👤 *Please send your username for this website:*</value>
     </data>
     <data name="SendPasswordToAddAccount" xml:space="preserve">
-        <value>🔑 **Please send your password for this website:**</value>
+        <value>🔑 *Please send your password for this website:*</value>
     </data>
     <data name="AddAccountFinalStep" xml:space="preserve">
-        <value>💼 **Here is your account:**
-🌐 **URL:** {0}
-🏷 **Website:** {1}
-👤 **Username:** {2}
-🔑 **Password:** {3}
-🔐 **Please provide a master password to encrypt your data:**</value>
+        <value>💼 *Here is your account:*
+🌐 *URL:* {0}
+🏷 *Website:* {1}
+👤 *Username:* {2}
+🔑 *Password:* {3}
+🔐 *Please provide a master password to encrypt your data:*</value>
     </data>
     <data name="WrongUrlFormat" xml:space="preserve">
-        <value>❌ **Invalid URL format. Please try again.**</value>
+        <value>❌ *Invalid URL format. Please try again.*</value>
     </data>
     <data name="WrongMasterPassword" xml:space="preserve">
-        <value>⚠️ **Incorrect master password. Please try again or cancel the action.**</value>
+        <value>⚠️ *Incorrect master password. Please try again or cancel the action.*</value>
     </data>
     <data name="AddAccountSuccess" xml:space="preserve">
-        <value>✅ **Account successfully added!**</value>
+        <value>✅ *Account successfully added!*</value>
     </data>
     <data name="SendMasterPasswordToDecrypt" xml:space="preserve">
-        <value>🔐 **Please provide your master password to decrypt data:**</value>
+        <value>🔐 *Please provide your master password to decrypt data:*</value>
     </data>
     <data name="GetCredentialsProvideMasterPassword" xml:space="preserve">
-        <value>📄 **URL:** {0}
-🏷 **Website Name:** {1}
-👤 **Username:** {2}
-🔐 **To retrieve the credentials for this account, please provide the master password:**</value>
+        <value>📄 *URL:* {0}
+🏷 *Website Name:* {1}
+👤 *Username:* {2}
+🔐 *To retrieve the credentials for this account, please provide the master password:*</value>
     </data>
     <data name="HereIsYourPassword" xml:space="preserve">
-        <value>🔑 **Here is your password. Copy it and use it as needed. It will be automatically deleted after 1 minute.**</value>
+        <value>🔑 *Here is your password. Copy it and use it as needed. It will be automatically deleted after 1 minute.*</value>
     </data>
     <data name="ChooseAccountForCredentials" xml:space="preserve">
-        <value>📂 **Please choose the account you want to get credentials for.**</value>
+        <value>📂 *Please choose the account you want to get credentials for.*</value>
     </data>
     <data name="DeleteAccountConfirmation" xml:space="preserve">
-        <value>📄 **URL:** {0}
-🏷 **Website Name:** {1}
-👤 **Username:** {2}
-⚠️ **Are you sure you want to delete this account? Please type the website name to confirm:**</value>
+        <value>📄 *URL:* {0}
+🏷 *Website Name:* {1}
+👤 *Username:* {2}
+⚠️ *Are you sure you want to delete this account? Please type the website name to confirm:*</value>
     </data>
     <data name="WrongDeleteAccountConfirmation" xml:space="preserve">
-        <value>❌ **Incorrect website name. Please try again or cancel:**</value>
+        <value>❌ *Incorrect website name. Please try again or cancel:*</value>
     </data>
     <data name="AccountDeleted" xml:space="preserve">
-        <value>🗑 **Account successfully deleted!**</value>
+        <value>🗑 *Account successfully deleted!*</value>
     </data>
     <data name="ChangeMasterPasswordConditions" xml:space="preserve">
-        <value>🔐 **To securely change your master password, please provide your old password and the new password on separate lines as follows:**
+        <value>🔐 *To securely change your master password, please provide your old password and the new password on separate lines as follows:*
 oldPassword
 newPassword
 newPassword</value>
     </data>
     <data name="WrongLinesCount" xml:space="preserve">
-        <value>❌ **Incorrect number of lines. Please try again.**</value>
+        <value>❌ *Incorrect number of lines. Please try again.*</value>
     </data>
     <data name="NewMasterPasswordNotMatch" xml:space="preserve">
-        <value>❌ **The new passwords do not match. Please check and try again.**</value>
+        <value>❌ *The new passwords do not match. Please check and try again.*</value>
     </data>
     <data name="MasterPasswordChanged" xml:space="preserve">
-        <value>✅ **Master password successfully changed!**</value>
+        <value>✅ *Master password successfully changed!*</value>
     </data>
     <data name="ChooseSettingsToUpdate" xml:space="preserve">
-        <value>⚙️ **Please choose the settings you want to update:**</value>
+        <value>⚙️ *Please choose the settings you want to update:*</value>
     </data>
     <data name="LanguageSelection" xml:space="preserve">
-    <value>🌐 **Please select your language:**
+    <value>🌐 *Please select your language:*
 - 🇬🇧 English
 - 🇺🇦 Українська</value>
     </data>
     <data name="WrongLocaleChosen" xml:space="preserve">
-    <value>❌ **Invalid language selection. Please choose a valid option:**
+    <value>❌ *Invalid language selection. Please choose a valid option:*
 - 🇬🇧 English
 - 🇺🇦 Українська</value>
     </data>
     <data name="ChooseOnlyButtonValue" xml:space="preserve">
-    <value>⚠️ **You can only choose a button value.**</value>
+    <value>⚠️ *You can only choose a button value.*</value>
     </data>
     <data name="ChooseAccountToChange" xml:space="preserve">
-        <value>📂 **Please choose the account you want to update.**</value>
+        <value>📂 *Please choose the account you want to update.*</value>
     </data>
     <data name="ChooseWhatChangeInAccount" xml:space="preserve">
-        <value>📄 **URL:** {0}
-🏷 **Website Name:** {1}
-👤 **Username:** {2}
-⚠️ **Choose what do you want to change:**</value>
+        <value>📄 *URL:* {0}
+🏷 *Website Name:* {1}
+👤 *Username:* {2}
+⚠️ *Choose what do you want to change:*</value>
     </data>
     <data name="ChangeWebsiteNickname" xml:space="preserve">
-        <value>🏷 **Please provide a new nickname for your website:**</value>
+        <value>🏷 *Please provide a new nickname for your website:*</value>
     </data>
     <data name="ChangeWebsiteUrl" xml:space="preserve">
-        <value>🌐 **Please send new URL of your website:**</value>
+        <value>🌐 *Please send new URL of your website:*</value>
     </data>
     <data name="ChangeUsername" xml:space="preserve">
-        <value>👤 **Please send your new username for this website:**</value>
+        <value>👤 *Please send your new username for this website:*</value>
     </data>
     <data name="ChangePassword" xml:space="preserve">
-        <value>🔑 **Please send your new password for this website:**</value>
+        <value>🔑 *Please send your new password for this website:*</value>
     </data>
     <data name="AccountChanged" xml:space="preserve">
-        <value>✅ **Account successfully updated!**</value>
+        <value>✅ *Account successfully updated!*</value>
     </data>
     <data name="SendMasterPasswordToEncrypt" xml:space="preserve">
-        <value>🔐 **Please provide your master password to encrypt data:**</value>
+        <value>🔐 *Please provide your master password to encrypt data:*</value>
+    </data>
+    <data name="About" xml:space="preserve">
+        <value>*Password Manager Bot*
+
+This bot securely manages your passwords. Here's how it works:
+
+- *No Master Password Storage*: The master password is not stored.
+- *Encrypted Passwords*: All passwords are encrypted.
+- *Symmetric Encryption*: Uses symmetric encryption.
+- *Master Password Usage*: Used only for encryption/decryption and immediately erased from memory.
+- *Open Source*: The code is fully open source.
+
+For any issues, please create an [issue on GitHub](https://github.com/Soteyl/PasswordManager) 🐛.
+
+*GitHub Code*: [PasswordManager](https://github.com/Soteyl/PasswordManager)
+
+*Donations*: USDT TRC20 TCPGzhYS523eoMxJCdBi56hz6KeTwJBosG 💰</value>
     </data>
 </root>

@@ -67,4 +67,7 @@
     <data name="Password" xml:space="preserve">
         <value>🔑 Password</value>
     </data>
+    <data name="About" xml:space="preserve">
+        <value>ℹ️About</value>
+    </data>
 </root>

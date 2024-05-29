@@ -67,4 +67,7 @@
     <data name="WebsiteUrl" xml:space="preserve">
         <value>🌐 URL сайту</value>
     </data>
+    <data name="About" xml:space="preserve">
+        <value>ℹ️Інформація</value>
+    </data>
 </root>

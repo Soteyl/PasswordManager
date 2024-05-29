@@ -13,8 +13,9 @@ public class MainMenu: IFormRegistration
                .AddStep(s => s.Builder
                               .WithQuestion(MessageBodies.WrongMessageWarningBody)
                               .WithAnswerRow(MessageButtons.ShowMyAccounts)
-                              .WithAnswerRow(MessageButtons.Settings)
+                              .WithAnswerRow(MessageButtons.Settings, MessageButtons.About)
                               .OnlyButtonAnswer()
+                              .ExecuteAnotherForm<About>(MessageButtons.About)
                               .ExecuteAnotherForm<GetAccounts>(MessageButtons.ShowMyAccounts)
                               .ExecuteAnotherForm<Settings>(MessageButtons.Settings))
                .Build();

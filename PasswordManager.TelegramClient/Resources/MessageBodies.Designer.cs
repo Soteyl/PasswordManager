@@ -272,5 +272,11 @@ namespace PasswordManager.TelegramClient.Resources {
                 return ResourceManager.GetString("SendMasterPasswordToEncrypt", resourceCulture);
             }
         }
+        
+        internal static string About {
+            get {
+                return ResourceManager.GetString("About", resourceCulture);
+            }
+        }
     }
 }
