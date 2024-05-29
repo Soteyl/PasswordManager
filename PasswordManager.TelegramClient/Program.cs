@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using PasswordManager;
 using PasswordManager.TelegramClient.Background;
 using PasswordManager.TelegramClient.Common.Extensions;
@@ -14,6 +15,8 @@ using PasswordManager.TelegramClient.Data;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.FormRegistrations.Handler;
 using PasswordManager.TelegramClient.Messenger;
+using Serilog;
+using Serilog.Core;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using TelegramMessengerClient = PasswordManager.TelegramClient.Messenger.TelegramMessengerClient;
@@ -25,6 +28,12 @@ var config = builder.Configuration
     .AddJsonFile("secrets.json")
     .AddJsonFile("appsettings.json")
     .Build();
+
+Log.Logger = new LoggerConfiguration()
+             .WriteTo.Console()
+             .CreateLogger();
+
+builder.Services.AddSerilog();
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 

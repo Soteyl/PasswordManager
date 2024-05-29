@@ -1,26 +1,25 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 
 namespace PasswordManager.TelegramClient.Background;
 
-public class TelegramUpdatesReceiver: BackgroundService
+public class TelegramUpdatesReceiver(ITelegramBotClient client, IUpdateHandler updateHandler, 
+    ILogger<TelegramUpdatesReceiver> logger): BackgroundService
 {
-    private readonly ITelegramBotClient _client;
-    
-    private readonly IUpdateHandler _updateHandler;
-
-    public TelegramUpdatesReceiver(ITelegramBotClient client, IUpdateHandler updateHandler)
-    {
-        _client = client;
-        _updateHandler = updateHandler;
-    }
-    
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            await _client.ReceiveAsync(_updateHandler, cancellationToken: cancellationToken);
+            try
+            {
+                await client.ReceiveAsync(updateHandler, cancellationToken: cancellationToken);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e.ToString());
+            }
         }
     }
 }
