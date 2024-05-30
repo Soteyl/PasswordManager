@@ -67,6 +67,8 @@ public class ChangeAccount(PasswordStorageService.PasswordStorageServiceClient p
            .AddStep(s =>
            {
                var changeAction = s.Data[ChangeAction];
+
+               throw new Exception();
                var builder = s.Builder
                               .WithQuestion(_questionByAnswer[changeAction])
                               .WithAnswerKey(Answer)
