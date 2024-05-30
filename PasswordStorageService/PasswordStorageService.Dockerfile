@@ -1,9 +1,9 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0.3-jammy-amd64 AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0.3-jammy AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0.203-jammy-amd64 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.203-jammy AS build
 WORKDIR /src
 COPY ["PasswordStorageService/PasswordStorageService.csproj", "PasswordStorageService/"]
 RUN dotnet restore "PasswordStorageService/PasswordStorageService.csproj"
