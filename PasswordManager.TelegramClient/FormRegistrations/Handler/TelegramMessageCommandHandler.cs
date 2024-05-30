@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using Microsoft.Extensions.Logging;
+using PasswordManager.TelegramClient.Common.Keyboard;
 using PasswordManager.TelegramClient.Data.Repository;
 using PasswordManager.TelegramClient.Messenger;
 using PasswordManager.TelegramClient.Resources;
@@ -28,27 +29,27 @@ public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessag
             if (activeForm != typeof(SetUpMasterPassword)
                 && user is { MasterPasswordHash: null })
             {
-                _ = formMessageHandler.StartFormRequestAsync<SetUpMasterPassword>(update.Message.From!.Id,
-                    update.Message.Chat.Id, cancellationToken);
+                _ = TryRunTask(formMessageHandler.StartFormRequestAsync<SetUpMasterPassword>(update.Message.From!.Id,
+                    update.Message.Chat.Id, cancellationToken), update.Message.From.Id, cancellationToken);
 
                 return;
             }
 
             if (activeForm is not null && form != typeof(MainMenu))
             {
-                _ = formMessageHandler.HandleFormRequestAsync(new FormStepData()
+                _ = TryRunTask(formMessageHandler.HandleFormRequestAsync(new FormStepData()
                 {
                     Message = update.Message.Text,
                     MessageId = update.Message.MessageId,
                     UserId = update.Message.From.Id,
                     ChatId = update.Message.Chat.Id
-                }, cancellationToken);
+                }, cancellationToken), update.Message.From.Id, cancellationToken);
 
                 return;
             }
 
-            await formMessageHandler.StartFormRequestAsync(form ?? typeof(MainMenu), update.Message.From.Id, update.Message.Chat.Id,
-                cancellationToken);
+            _ = TryRunTask(formMessageHandler.StartFormRequestAsync(form ?? typeof(MainMenu), update.Message.From.Id, update.Message.Chat.Id,
+                cancellationToken), update.Message.From.Id, cancellationToken);
         }
         catch (Exception e) // dont throw exception again to avoid infinite loop
         {
@@ -56,6 +57,7 @@ public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessag
 
             if (update.Message?.From != null)
                 await messengerClient.SendMessageAsync(MessageBodies.InternalError, update.Message.From.Id,
+                    answers: new KeyboardBuilder().Return().Build(),
                     cancellationToken: cancellationToken);
         }
     }
@@ -64,5 +66,22 @@ public class TelegramMessageCommandHandler(TelegramFormMessageHandler formMessag
     {
         logger.LogError(exception.ToString());  
         return Task.CompletedTask;
+    }
+
+    private async Task TryRunTask(Task task, long? userId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await task;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e.ToString());
+
+            if (userId.HasValue)
+                await messengerClient.SendMessageAsync(MessageBodies.InternalError, userId.Value,
+                    answers: new KeyboardBuilder().Return().Build(),
+                    cancellationToken: cancellationToken);
+        }
     }
 }
