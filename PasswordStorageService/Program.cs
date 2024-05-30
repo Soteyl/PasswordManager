@@ -5,8 +5,8 @@ using PasswordStorageService.Services.PasswordStorage;
 var builder = WebApplication.CreateBuilder(args);
 
 var config = builder.Configuration
-    .AddEnvironmentVariables()
     .AddJsonFile("secrets.json")
+    .AddEnvironmentVariables()
     .Build();
 
 // Add services to the container.

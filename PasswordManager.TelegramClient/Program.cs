@@ -24,9 +24,9 @@ using TelegramMessengerClient = PasswordManager.TelegramClient.Messenger.Telegra
 var builder = Host.CreateApplicationBuilder(args);
 
 var config = builder.Configuration
-    .AddEnvironmentVariables()
     .AddJsonFile("secrets.json")
     .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
     .Build();
 
 Log.Logger = new LoggerConfiguration()
