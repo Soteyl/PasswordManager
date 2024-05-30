@@ -16,7 +16,7 @@ public class ChangeAccount(PasswordStorageService.PasswordStorageServiceClient p
     private const string ChangeAction = "changeAction";
     private const string Answer = "answer";
     private const string EncryptedPassword = "masterPassword";
-    private readonly Dictionary<string, string> _questionByAnswer = new()
+    private Dictionary<string, string> QuestionByAnswer => new()
     {
         { MessageButtons.WebsiteNickname, MessageBodies.ChangeWebsiteNickname },
         { MessageButtons.WebsiteUrl, MessageBodies.ChangeWebsiteUrl },
@@ -69,7 +69,7 @@ public class ChangeAccount(PasswordStorageService.PasswordStorageServiceClient p
                var changeAction = s.Data[ChangeAction];
 
                var builder = s.Builder
-                              .WithQuestion(_questionByAnswer[changeAction])
+                              .WithQuestion(QuestionByAnswer[changeAction])
                               .WithAnswerKey(Answer)
                               .WithAnswerRow(MessageButtons.Cancel);
 
