@@ -16,7 +16,9 @@ builder.Services.AddDbContext<PasswordStorageContext>(o => o.UseNpgsql(config.Ge
 
 var app = builder.Build();
 
-app.Services.CreateScope().ServiceProvider.GetRequiredService<PasswordStorageContext>().Database.Migrate();
+var passwordStorageContext = app.Services.CreateScope().ServiceProvider.GetRequiredService<PasswordStorageContext>().Database;
+passwordStorageContext.EnsureCreated();
+passwordStorageContext.Migrate();
 
 app.MapGrpcService<PasswordStorageController>();
 

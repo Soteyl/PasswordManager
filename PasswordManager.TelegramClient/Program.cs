@@ -54,6 +54,8 @@ builder.Services.AddHostedService<TelegramUpdatesReceiver>();
 
 var app = builder.Build();
 
-app.Services.GetRequiredService<TelegramClientContext>().Database.Migrate();
+var telegramContext = app.Services.GetRequiredService<TelegramClientContext>().Database;
+telegramContext.EnsureCreated();
+telegramContext.Migrate();
 
 app.Run();
