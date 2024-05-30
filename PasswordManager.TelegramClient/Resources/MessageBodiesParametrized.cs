@@ -31,6 +31,6 @@ public static class MessageBodiesParametrized
     
     public static string ChooseWhatChangeInAccount(AccountInfo account)
     {
-        return string.Format(MessageBodies.ChooseWhatChangeInAccount, account.WebsiteNickname, account.Url, account.User);
+        return string.Format(MessageBodies.ChooseWhatChangeInAccount, account.Url, account.WebsiteNickname, account.User);
     }
 }
